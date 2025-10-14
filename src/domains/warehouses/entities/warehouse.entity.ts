@@ -15,4 +15,7 @@ export class Warehouse extends BaseEntity<WarehouseDto> {
 
   @Column({ type: 'int' })
   capacity: number;
+
+  @Column({ type: 'int', default: 0 })
+  quantity_in_stock: number;
 }

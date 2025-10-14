@@ -75,4 +75,26 @@ export class InventoryService {
 
     return Number(sum) || 0;
   }
+
+  async findWarehouseStockLevel(query: {
+    warehouse_id: string;
+    product_id?: string;
+  }) {
+    const { warehouse_id, product_id } = query;
+    const qb = this.repo.createQueryBuilder('warehouse_stocks').where('1=1');
+
+    qb.andWhere('warehouse_stocks.warehouse_id = :warehouse_id', {
+      warehouse_id,
+    });
+
+    if (product_id) {
+      qb.andWhere('warehouse_stocks.product_id = :product_id', { product_id });
+    }
+
+    const { sum } = await qb
+      .select('SUM(warehouse_stocks.quantity)', 'sum')
+      .getRawOne();
+
+    return Number(sum) || 0;
+  }
 }

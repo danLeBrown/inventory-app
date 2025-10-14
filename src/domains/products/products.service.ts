@@ -112,8 +112,13 @@ export class ProductsService {
 
   async delete(id: string): Promise<void> {
     const product = await this.findByIdOrFail(id);
+    if (product.quantity_in_stock > 0) {
+      throw new BadRequestException(
+        'Cannot delete product with stocks. Reduce the stock level to zero before deleting the product.',
+      );
+    }
 
-    await this.repo.remove(product);
+    await this.repo.delete(id);
   }
 
   async updateQuantityInStock(id: string, quantity: number) {

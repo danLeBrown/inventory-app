@@ -1,6 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { ensureTransaction } from '@/helpers/database';
 
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { SearchAndPaginateWarehouseDto } from './dto/query-and-paginate-warehouse.dto';
@@ -83,8 +89,35 @@ export class WarehousesService {
   }
 
   async delete(id: string) {
-    await this.findOneOrFail(id);
+    const warehouse = await this.findOneOrFail(id);
+
+    if (warehouse.quantity_in_stock > 0) {
+      throw new BadRequestException(
+        'Cannot delete warehouse with stocks. Reduce the stock level to zero before deleting the warehouse.',
+      );
+    }
 
     await this.repo.delete(id);
+  }
+
+  async updateQuantityInStock(id: string, quantity: number) {
+    await ensureTransaction(() =>
+      this.repo.manager.transaction(async (manager) => {
+        const repo = manager.getRepository(Warehouse);
+        const warehouse = await repo.findOne({
+          where: {
+            id,
+          },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!warehouse) {
+          throw new NotFoundException('Warehouse not found');
+        }
+        await repo.update(warehouse.id, {
+          quantity_in_stock: Math.max(0, quantity),
+        });
+      }),
+    );
   }
 }

@@ -53,11 +53,11 @@ export class CreateWarehouseStocks1760465686787 implements MigrationInterface {
       columnNames: ['warehouse_id'],
     }),
     new TableIndex({
-      name: 'idx_product_suppliers_created_at',
+      name: 'idx_warehouse_stocks_created_at',
       columnNames: ['created_at'],
     }),
     new TableIndex({
-      name: 'idx_product_suppliers_updated_at',
+      name: 'idx_warehouse_stocks_updated_at',
       columnNames: ['updated_at'],
     }),
   ];
