@@ -1,0 +1,193 @@
+name: 🚀 CI/CD Pipeline
+
+on:
+  pull_request: {}
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  lint:
+    name: ⬣ ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚦 Cancel Previous Runs
+        if: ${{ !env.ACT }}
+        uses: styfle/cancel-workflow-action@0.12.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ⎔ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: ⎔ Create Test Env
+        run: cp .env.test.example .env.test
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🔬 Lint
+        run: pnpm lint
+
+  unit_test:
+    name: 🔬 Unit Tests
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: 🚦 Cancel Previous Runs
+        if: ${{ !env.ACT }}
+        uses: styfle/cancel-workflow-action@0.12.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ⎔ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: ⎔ Create Test Env
+        run: cp .env.test.example .env.test
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🔬 Run Unit Tests
+        run: pnpm test:unit
+
+  e2e_test:
+    name: ⚫️ E2E Tests
+    runs-on: ubuntu-latest
+    needs: [unit_test]
+    services:
+      # This ensures Docker is available for testcontainers
+      docker:
+        image: docker:dind
+        options: --privileged
+        ports:
+          - 2375:2375
+    steps:
+      - name: 🚦 Cancel Previous Runs
+        if: ${{ !env.ACT }}
+        uses: styfle/cancel-workflow-action@0.12.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ⎔ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: ⎔ Create Test Env
+        run: cp .env.test.example .env.test
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🔬 Run E2E Tests
+        run: pnpm test:e2e
+
+  build:
+    name: 🐳 Build
+    if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/deploy') && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    needs: [e2e_test]
+    steps:
+      - name: 🚦 Cancel Previous Runs
+        if: ${{ !env.ACT }}
+        uses: styfle/cancel-workflow-action@0.12.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ⎔ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🏗️ Build
+        run: pnpm build

@@ -1,0 +1,101 @@
+name: 🚀 Deploy main
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    name: 🎉 Build and Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Adjust based on your Node version
+
+      - name: 📥 Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8 # Adjust based on your pnpm version
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🔨 Build application
+        run: npm run build
+
+      - name: 🔍 Prepare deployment directory
+        run: |
+          mkdir -p deployment
+          cp -r dist/ deployment/
+          cp package.json deployment/
+          cp pnpm-lock.yaml deployment/
+          cp ormconfig.js deployment/
+          cp seeding-source.js deployment/
+
+          # Optional - include other necessary files
+          # cp .env.example deployment/
+          # cp -r src/database/migrations/ deployment/
+
+      - name: 📂 Deploy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          source: 'deployment/*'
+          target: '/tmp/app-deployment'
+          strip_components: 1
+
+      - name: 🛠️ Finalize deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh   
+
+            cd /var/www/staging-inventory-api.danlebrown.com/public_html
+            # Backup current dist (optional)
+            mv dist dist_backup_$(date +%Y%m%d%H%M%S) 2>/dev/null || true
+
+            # Copy new dist & package files
+            cp -r /tmp/app-deployment/* .
+
+            # Install production dependencies only
+            pnpm install --prod
+
+            # Run migrations
+            npm run migration:prod:run
+
+            # Restart the application
+            pm2 restart inventory-app
+
+            # Clean up
+            rm -rf /tmp/app-deployment

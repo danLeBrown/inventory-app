@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "target": "ES2017",
+    "module": "commonjs",
+    "allowJs": true,
+    "declaration": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+
+    // "incremental": true,
+    // "preserveSymlinks": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "noLib": false,
+    "lib": ["es5", "es6", "DOM", "ES2021.String", "ESNext", "DOM.Iterable"],
+    "baseUrl": "./",
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    "jsx": "react",
+
+    // "allowImportingTsExtensions": true,
+    // "noEmit": true,
+    "allowUmdGlobalAccess": true,
+
+    "inlineSources": true,
+
+    // Set `sourceRoot` to  "/" to strip the build path prefix
+    // from generated source code references.
+    // This improves issue grouping in Sentry.
+    "sourceRoot": "/"
+  },
+  "include": ["src/*", "src/**/*", "src/domains/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "dist", "build"]
+}
