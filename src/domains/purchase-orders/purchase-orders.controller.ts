@@ -12,11 +12,13 @@ import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PaginatedDto } from '@/common/dto/paginated.dto';
 
 import { AuditLog } from '../audit-logs/decorators/audit-log.decorator';
+import { UnauthenticatedRoute } from '../authentication/decorators/unauthenticated.decorator';
 import { PurchaseOrderDto } from './dto/purchase-order.dto';
 import { PurchaseOrderLogDto } from './dto/purchase-order-log.dto';
 import { QueryAndPaginatePurchaseOrderDto } from './dto/query-and-paginate-purchase-order.dto';
 import { PurchaseOrdersService } from './purchase-orders.service';
 
+@UnauthenticatedRoute()
 @Controller({ path: 'purchase-orders', version: '1' })
 export class PurchaseOrdersController {
   constructor(private readonly purchaseOrdersService: PurchaseOrdersService) {}

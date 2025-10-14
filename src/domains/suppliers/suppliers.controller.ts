@@ -14,12 +14,14 @@ import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PaginatedDto } from '@/common/dto/paginated.dto';
 
 import { AuditLog } from '../audit-logs/decorators/audit-log.decorator';
+import { UnauthenticatedRoute } from '../authentication/decorators/unauthenticated.decorator';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { SearchAndPaginateSupplierDto } from './dto/query-and-paginate-supplier.dto';
 import { SupplierDto } from './dto/supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { SuppliersService } from './suppliers.service';
 
+@UnauthenticatedRoute()
 @ApiTags('Suppliers')
 @Controller({ path: 'suppliers', version: '1' })
 export class SuppliersController {
