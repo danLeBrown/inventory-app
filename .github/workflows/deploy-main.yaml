@@ -59,7 +59,7 @@ jobs:
           # cp -r src/database/migrations/ deployment/
 
       - name: 📂 Deploy to server
-        uses: appleboy/scp-action@v1
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.DEV_USER }}
@@ -70,7 +70,7 @@ jobs:
           strip_components: 1
 
       - name: 🛠️ Finalize deployment
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.DEV_USER }}
