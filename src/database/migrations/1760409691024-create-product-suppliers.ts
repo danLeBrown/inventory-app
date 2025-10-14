@@ -3,6 +3,7 @@ import {
   QueryRunner,
   Table,
   TableColumn,
+  TableForeignKey,
   TableIndex,
 } from 'typeorm';
 
@@ -70,12 +71,28 @@ export class CreateProductSuppliers1760409691024 implements MigrationInterface {
     }),
   ];
 
+  private foreignKeys = [
+    new TableForeignKey({
+      columnNames: ['product_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'products',
+      onDelete: 'CASCADE',
+    }),
+    new TableForeignKey({
+      columnNames: ['supplier_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'suppliers',
+      onDelete: 'CASCADE',
+    }),
+  ];
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
         name: this.tableName,
         columns: this.columns,
         indices: this.indices,
+        foreignKeys: this.foreignKeys,
       }),
     );
   }

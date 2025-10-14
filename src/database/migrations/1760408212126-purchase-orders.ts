@@ -3,6 +3,7 @@ import {
   QueryRunner,
   Table,
   TableColumn,
+  TableForeignKey,
   TableIndex,
 } from 'typeorm';
 
@@ -20,14 +21,17 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
     new TableColumn({
       name: 'product_id',
       type: 'uuid',
+      isNullable: true,
     }),
     new TableColumn({
       name: 'supplier_id',
       type: 'uuid',
+      isNullable: true,
     }),
     new TableColumn({
       name: 'warehouse_id',
       type: 'uuid',
+      isNullable: true,
     }),
     new TableColumn({
       name: 'quantity',
@@ -96,12 +100,34 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
     }),
   ];
 
+  private foreignKeys = [
+    new TableForeignKey({
+      columnNames: ['product_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'products',
+      onDelete: 'SET NULL',
+    }),
+    new TableForeignKey({
+      columnNames: ['supplier_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'suppliers',
+      onDelete: 'SET NULL',
+    }),
+    new TableForeignKey({
+      columnNames: ['warehouse_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'warehouses',
+      onDelete: 'SET NULL',
+    }),
+  ];
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
         name: this.tableName,
         columns: this.columns,
         indices: this.indices,
+        foreignKeys: this.foreignKeys,
       }),
     );
   }

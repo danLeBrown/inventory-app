@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { PaginatedDto } from '@/common/dto/paginated.dto';
 
@@ -20,6 +20,7 @@ import { SearchAndPaginateProductDto } from './dto/query-and-paginate-product.dt
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 
+@ApiTags('Products')
 @Controller({ path: 'products', version: '1' })
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -27,7 +28,7 @@ export class ProductsController {
   @Post('')
   @ApiCreatedResponse({
     description: 'The product has been created.',
-    example: ProductDto,
+    type: ProductDto,
   })
   @AuditLog({
     action: 'Create product',
@@ -56,7 +57,7 @@ export class ProductsController {
   @ApiOkResponse({
     description: 'List of products',
     isArray: true,
-    type: ProductDto,
+    type: [ProductDto],
   })
   @AuditLog({
     action: 'Query products',
@@ -80,7 +81,7 @@ export class ProductsController {
     action: 'Get product by ID',
   })
   async findById(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.productsService.findById(id);
+    const data = await this.productsService.findByIdOrFail(id);
 
     return {
       data: data.toDto(),
@@ -90,7 +91,15 @@ export class ProductsController {
   @Patch(':id')
   @ApiOkResponse({
     description: 'The product has been updated.',
-    type: ProductDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Product updated successfully',
+        },
+      },
+    },
   })
   @AuditLog({
     action: 'Update product',
@@ -99,10 +108,10 @@ export class ProductsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateProductDto,
   ) {
-    const data = await this.productsService.update(id, dto);
+    await this.productsService.update(id, dto);
 
     return {
-      data: data.toDto(),
+      message: 'Product updated successfully',
     };
   }
 

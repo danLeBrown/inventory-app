@@ -32,6 +32,11 @@ export class CreateWarehouses1760408029106 implements MigrationInterface {
       type: 'int',
     }),
     new TableColumn({
+      name: 'quantity_in_stock',
+      type: 'int',
+      default: 0,
+    }),
+    new TableColumn({
       name: 'created_at',
       type: 'bigint',
       default: `FLOOR(EXTRACT(EPOCH FROM NOW()))`,

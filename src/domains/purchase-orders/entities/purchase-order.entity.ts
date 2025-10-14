@@ -7,6 +7,7 @@ import { Product } from '../../products/entities/product.entity';
 import { Supplier } from '../../suppliers/entities/supplier.entity';
 import { Warehouse } from '../../warehouses/entities/warehouse.entity';
 import { PurchaseOrderDto } from '../dto/purchase-order.dto';
+import { PurchaseOrderStatus } from '../types';
 
 @Entity({ name: 'purchase_orders' })
 @SetDto(PurchaseOrderDto)
@@ -21,7 +22,7 @@ export class PurchaseOrder extends BaseEntity<PurchaseOrderDto> {
   warehouse_id: string;
 
   @Column({ type: 'varchar', length: 20 })
-  status: 'pending' | 'received' | 'canceled';
+  status: PurchaseOrderStatus;
 
   @Column({ type: 'int' })
   quantity_ordered: number;

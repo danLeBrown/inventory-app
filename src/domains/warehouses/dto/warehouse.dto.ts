@@ -22,10 +22,17 @@ export class WarehouseDto extends BaseDto {
   })
   capacity: number;
 
+  @ApiProperty({
+    example: 500,
+    description: 'The current quantity in stock at the warehouse',
+  })
+  quantity_in_stock: number;
+
   constructor(partial: Warehouse) {
     super(partial);
     this.name = partial.name;
     this.location = partial.location;
     this.capacity = partial.capacity;
+    this.quantity_in_stock = partial.quantity_in_stock;
   }
 }

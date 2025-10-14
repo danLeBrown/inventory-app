@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not } from 'typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 
+import { ensureTransaction } from '@/helpers/database';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { SearchAndPaginateProductDto } from './dto/query-and-paginate-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -80,7 +82,7 @@ export class ProductsService {
     return qb.getManyAndCount();
   }
 
-  async findById(id: string): Promise<Product> {
+  async findByIdOrFail(id: string): Promise<Product> {
     const product = await this.repo.findOne({
       where: { id },
     });
@@ -92,8 +94,8 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<Product> {
-    const product = await this.findById(id);
+  async update(id: string, dto: UpdateProductDto) {
+    const product = await this.findByIdOrFail(id);
 
     if (dto.sku && dto.sku !== product.sku) {
       const exists = await this.repo.exists({
@@ -106,13 +108,37 @@ export class ProductsService {
     }
 
     await this.repo.update(id, dto);
-
-    return this.findById(id);
   }
 
   async delete(id: string): Promise<void> {
-    const product = await this.findById(id);
+    const product = await this.findByIdOrFail(id);
+    if (product.quantity_in_stock > 0) {
+      throw new BadRequestException(
+        'Cannot delete product with stocks. Reduce the stock level to zero before deleting the product.',
+      );
+    }
 
-    await this.repo.remove(product);
+    await this.repo.delete(id);
+  }
+
+  async updateQuantityInStock(id: string, quantity: number) {
+    await ensureTransaction(() =>
+      this.repo.manager.transaction(async (manager) => {
+        const repo = manager.getRepository(Product);
+        const product = await repo.findOne({
+          where: {
+            id,
+          },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!product) {
+          throw new NotFoundException('Product not found');
+        }
+        await repo.update(product.id, {
+          quantity_in_stock: Math.max(0, quantity),
+        });
+      }),
+    );
   }
 }
