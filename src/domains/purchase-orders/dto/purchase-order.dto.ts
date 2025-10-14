@@ -37,12 +37,6 @@ export class PurchaseOrderDto extends BaseDto {
   quantity_ordered: number;
 
   @ApiProperty({
-    example: 1627849200,
-    description: 'The date when the order was placed (Unix timestamp)',
-  })
-  ordered_at: number;
-
-  @ApiProperty({
     example: 1628444000,
     description: 'The expected arrival date of the order (Unix timestamp)',
   })
@@ -55,7 +49,6 @@ export class PurchaseOrderDto extends BaseDto {
     this.supplier_id = partial.supplier_id;
     this.warehouse_id = partial.warehouse_id;
     this.quantity_ordered = partial.quantity_ordered;
-    this.ordered_at = partial.ordered_at;
     this.expected_to_arrive_at = partial.expected_to_arrive_at;
   }
 }

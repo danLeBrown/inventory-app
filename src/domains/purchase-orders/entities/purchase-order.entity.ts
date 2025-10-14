@@ -28,9 +28,6 @@ export class PurchaseOrder extends BaseEntity<PurchaseOrderDto> {
   quantity_ordered: number;
 
   @Column({ type: 'bigint' })
-  ordered_at: number;
-
-  @Column({ type: 'bigint' })
   expected_to_arrive_at: number;
 
   @ManyToOne(() => Product)
