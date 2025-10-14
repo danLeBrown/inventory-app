@@ -6,25 +6,25 @@ import { PurchaseOrder } from '../entities/purchase-order.entity';
 
 export class PurchaseOrderDto extends BaseDto {
   @ApiProperty({
-    example: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
     description: 'The unique identifier for the purchase order',
   })
   order_id: string;
 
   @ApiProperty({
-    example: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
     description: 'The unique identifier for the product being ordered',
   })
   product_id: string;
 
   @ApiProperty({
-    example: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
     description: 'The unique identifier for the supplier',
   })
   supplier_id: string;
 
   @ApiProperty({
-    example: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
     description:
       'The unique identifier for the warehouse where the order will be stored',
   })
