@@ -54,9 +54,15 @@ export class PurchaseOrdersService {
       pending_purchase_orders,
     });
 
-    if (quantity === 0 || !warehouse) {
+    if (!warehouse) {
       throw new BadRequestException(
         'No warehouse available to receive the purchase order',
+      );
+    }
+
+    if (quantity < 1) {
+      throw new BadRequestException(
+        'No more capacity available in the warehouses to receive the purchase order',
       );
     }
 
