@@ -12,12 +12,15 @@ import * as crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 import { Redis } from 'ioredis';
 
+import { AppConfigService } from '@/app-configs/app-config.service';
+
 @Injectable()
 export class HeaderCsrfMiddleware implements NestMiddleware {
   private readonly keyPrefix = 'csrf:';
 
   constructor(
     @Inject('REDIS_CLIENT') private readonly redis: Redis, // Inject your existing Redis client
+    private configService: AppConfigService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -26,6 +29,7 @@ export class HeaderCsrfMiddleware implements NestMiddleware {
 
     // Skip for safe methods and excluded routes
     if (
+      this.configService.get('DISABLE_CSRF_PROTECTION') === 'true' ||
       ['GET', 'HEAD', 'OPTIONS'].includes(method) ||
       url.endsWith('/csrf-token')
     ) {
