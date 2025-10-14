@@ -36,10 +36,6 @@ export class CreateProducts1760408106657 implements MigrationInterface {
       type: 'int',
     }),
     new TableColumn({
-      name: 'quantity_in_stock',
-      type: 'int',
-    }),
-    new TableColumn({
       name: 'created_at',
       type: 'bigint',
       default: `FLOOR(EXTRACT(EPOCH FROM NOW()))`,

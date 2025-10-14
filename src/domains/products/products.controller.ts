@@ -91,7 +91,15 @@ export class ProductsController {
   @Patch(':id')
   @ApiOkResponse({
     description: 'The product has been updated.',
-    type: ProductDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Product updated successfully',
+        },
+      },
+    },
   })
   @AuditLog({
     action: 'Update product',
@@ -100,10 +108,10 @@ export class ProductsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateProductDto,
   ) {
-    const data = await this.productsService.update(id, dto);
+    await this.productsService.update(id, dto);
 
     return {
-      data: data.toDto(),
+      message: 'Product updated successfully',
     };
   }
 

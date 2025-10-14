@@ -92,7 +92,7 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+  async update(id: string, dto: UpdateProductDto) {
     const product = await this.findByIdOrFail(id);
 
     if (dto.sku && dto.sku !== product.sku) {
@@ -106,8 +106,6 @@ export class ProductsService {
     }
 
     await this.repo.update(id, dto);
-
-    return this.findByIdOrFail(id);
   }
 
   async delete(id: string): Promise<void> {
