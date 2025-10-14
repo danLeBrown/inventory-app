@@ -30,4 +30,26 @@ export class ProductSuppliersService {
 
     return productSupplier;
   }
+
+  async findBy(query?: FindOptionsWhere<ProductSupplier>) {
+    return this.repo.find({ where: query });
+  }
+
+  async findDefaultSupplierForProduct(product_id: string) {
+    const suppliers = await this.repo.find({
+      where: { product_id },
+      order: { created_at: 'DESC' },
+    });
+
+    const defaultSupplier = suppliers.find((s) => s.is_default);
+    if (defaultSupplier) {
+      return defaultSupplier;
+    }
+
+    if (suppliers.length === 0) {
+      return null;
+    }
+
+    return suppliers[0];
+  }
 }

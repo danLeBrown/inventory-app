@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { addDays, getUnixTime } from 'date-fns';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { ProductSuppliersService } from '../inventory/product-suppliers.service';
 import { WarehousesService } from '../warehouses/warehouses.service';
@@ -30,7 +30,19 @@ export class PurchaseOrdersService {
       supplier_id: dto.supplier_id,
     });
 
-    // TODO: check if purchase order already exists
+    // TODO: check if pending purchase order already exists
+    const pending = await this.repo.findOne({
+      where: {
+        product_id: dto.product_id,
+        warehouse_id: dto.warehouse_id,
+        status: 'pending',
+      },
+    });
+
+    if (pending) {
+      await this.repo.delete(pending.id);
+    }
+
     const purchaseOrder = this.repo.create({
       product_id: dto.product_id,
       supplier_id: dto.supplier_id,
@@ -167,5 +179,9 @@ export class PurchaseOrdersService {
       where: { purchase_order_id },
       order: { created_at: 'DESC' },
     });
+  }
+
+  async findBy(query?: FindOptionsWhere<PurchaseOrder>) {
+    return this.repo.find({ where: query });
   }
 }

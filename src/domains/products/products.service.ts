@@ -1,14 +1,17 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bullmq';
 import { Not } from 'typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 
 import { ensureTransaction } from '@/helpers/database';
 
+import { CreatePurchaseOrderDto } from '../purchase-orders/dto/create-purchase-order.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { SearchAndPaginateProductDto } from './dto/query-and-paginate-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -16,7 +19,13 @@ import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectRepository(Product) private repo: Repository<Product>) {}
+  constructor(
+    @InjectRepository(Product) private repo: Repository<Product>,
+    @InjectQueue('purchase-orders')
+    private purchaseOrdersQueue: Queue<
+      Pick<CreatePurchaseOrderDto, 'product_id'>
+    >,
+  ) {}
 
   async findAll(): Promise<Product[]> {
     return this.repo.find();
@@ -140,5 +149,15 @@ export class ProductsService {
         });
       }),
     );
+  }
+
+  async createPurchaseOrder(product_id: string) {
+    //   const quantity_to_order = product.reorder_threshold * 2 - current_stock;
+    await this.purchaseOrdersQueue.add('create-purchase-order', {
+      product_id,
+    });
+    // const product = await this.findByIdOrFail(product_id);
+    // if(product.reorder_threshold > current_stock) {
+    // }
   }
 }
