@@ -20,6 +20,9 @@ export class PurchaseOrder extends BaseEntity<PurchaseOrderDto> {
   @Column({ type: 'uuid' })
   warehouse_id: string;
 
+  @Column({ type: 'varchar', length: 20 })
+  status: 'pending' | 'received' | 'canceled';
+
   @Column({ type: 'int' })
   quantity_ordered: number;
 
@@ -29,15 +32,15 @@ export class PurchaseOrder extends BaseEntity<PurchaseOrderDto> {
   @Column({ type: 'bigint' })
   expected_to_arrive_at: number;
 
-  @ManyToOne(() => Product, { eager: true })
-  @JoinColumn({ name: 'product_id' })
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
   product: Product;
 
-  @ManyToOne(() => Supplier, { eager: true })
-  @JoinColumn({ name: 'supplier_id' })
+  @ManyToOne(() => Supplier)
+  @JoinColumn({ name: 'supplier_id', referencedColumnName: 'id' })
   supplier: Supplier;
 
-  @ManyToOne(() => Warehouse, { eager: true })
-  @JoinColumn({ name: 'warehouse_id' })
+  @ManyToOne(() => Warehouse)
+  @JoinColumn({ name: 'warehouse_id', referencedColumnName: 'id' })
   warehouse: Warehouse;
 }

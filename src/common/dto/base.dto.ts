@@ -5,7 +5,7 @@ import { BaseEntity } from '../base.entity';
 export class BaseDto {
   @ApiProperty({
     description: 'The id of the entity',
-    example: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
   })
   id: string;
 
