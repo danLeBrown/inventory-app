@@ -1,8 +1,7 @@
 import { Column, Entity } from 'typeorm';
 
-import { BaseEntity } from '@/common/base.entity';
-import { SetDto } from '@/decorators/set-dto.decorator';
-
+import { BaseEntity } from '../../../common/base.entity';
+import { SetDto } from '../../../decorators/set-dto.decorator';
 import { WarehouseDto } from '../dto/warehouse.dto';
 
 @Entity({ name: 'warehouses' })

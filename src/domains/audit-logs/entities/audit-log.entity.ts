@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity } from '@/common/base.entity';
-import { SetDto } from '@/decorators/set-dto.decorator';
 import { User } from '@/domains/users/entities/user.entity';
 
+import { BaseEntity } from '../../../common/base.entity';
+import { SetDto } from '../../../decorators/set-dto.decorator';
 import { AuditLogDto } from '../dto/audit-log.dto';
 import { AuditLogStatus } from '../types';
 

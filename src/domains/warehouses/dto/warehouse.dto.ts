@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger/dist/decorators/api-property.decorator';
 
-import { BaseDto } from '@/common/dto/base.dto';
-
+import { BaseDto } from '../../../common/dto/base.dto';
 import { Warehouse } from '../entities/warehouse.entity';
 
 export class WarehouseDto extends BaseDto {

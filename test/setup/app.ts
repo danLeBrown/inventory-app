@@ -17,7 +17,6 @@ import { DataSource } from 'typeorm';
 
 import { AppModule } from '../../src/app.module';
 import { CreateAdminSeeder } from '../../src/database/seeders';
-import { MockS3Service } from '../../src/domains/uploads/providers';
 import { setupRedis } from '../helpers';
 
 export async function setupApplication(): Promise<
@@ -55,8 +54,6 @@ export async function setupApplication(): Promise<
         return dataSource;
       },
     })
-    .overrideProvider('IUploadService')
-    .useClass(MockS3Service)
     .compile();
 
   const app = moduleFixture.createNestApplication();
@@ -128,8 +125,8 @@ export async function loginAdmin(
     .set('x-csrf-token', csrf.token)
     .set('x-session-id', csrf.session_id)
     .send({
-      email: 'admin@risk-evaluation-app.com',
-      password: 'eAzWKnbW00SnPmA',
+      email: 'admin@inventory-app.com',
+      password: 'usTz9OUej0OW6H3h',
     })
     .expect(201);
 

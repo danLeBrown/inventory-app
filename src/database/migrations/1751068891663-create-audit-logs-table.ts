@@ -16,7 +16,7 @@ export class CreateAuditLogsTable1751068891663 implements MigrationInterface {
       type: 'uuid',
       isPrimary: true,
       generationStrategy: 'uuid',
-      default: 'gen_ulid()',
+      default: 'uuid_generate_v4()',
     }),
     new TableColumn({
       name: 'user_id',

@@ -18,7 +18,7 @@ export class CreateUserSessionsTable1748106108956
       type: 'uuid',
       isPrimary: true,
       generationStrategy: 'uuid',
-      default: 'gen_ulid()',
+      default: 'uuid_generate_v4()',
     }),
     new TableColumn({
       name: 'user_id',

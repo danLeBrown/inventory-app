@@ -8,6 +8,14 @@ export class CreateAdminSeeder extends Seeder {
     await userRepo.save(
       userRepo.create([
         {
+          first_name: 'Inventory',
+          last_name: 'Admin',
+          email: 'admin@inventory-app.com',
+          phone_number: '08000000002',
+          password: 'usTz9OUej0OW6H3h',
+          is_admin: true,
+        },
+        {
           first_name: 'Ayomide',
           last_name: 'Ojo',
           email: 'ayomidedaniel00@gmail.com',

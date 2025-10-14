@@ -15,7 +15,7 @@ export class CreateUsersTable1748104123752 implements MigrationInterface {
       type: 'uuid',
       isPrimary: true,
       generationStrategy: 'uuid',
-      default: 'gen_ulid()',
+      default: 'uuid_generate_v4()',
     }),
     new TableColumn({
       name: 'first_name',
