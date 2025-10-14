@@ -21,17 +21,17 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
     new TableColumn({
       name: 'product_id',
       type: 'uuid',
-      isNullable: false,
+      isNullable: true,
     }),
     new TableColumn({
       name: 'supplier_id',
       type: 'uuid',
-      isNullable: false,
+      isNullable: true,
     }),
     new TableColumn({
       name: 'warehouse_id',
       type: 'uuid',
-      isNullable: false,
+      isNullable: true,
     }),
     new TableColumn({
       name: 'quantity',

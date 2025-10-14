@@ -27,7 +27,7 @@ export class SuppliersService {
     const supplier = await this.findOne(id);
 
     if (!supplier) {
-      throw new NotFoundException('SuPplier not found');
+      throw new NotFoundException('Supplier not found');
     }
 
     return supplier;
