@@ -70,11 +70,11 @@ jobs:
           strip_components: 1
 
       - name: 🛠️ Finalize deployment
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.DEV_USER }}
-          key: ${{ secrets.DEV_SSH_KEY }}
+          password: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
             export NVM_DIR=~/.nvm
