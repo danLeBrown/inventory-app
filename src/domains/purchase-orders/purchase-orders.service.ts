@@ -34,9 +34,7 @@ export class PurchaseOrdersService {
       );
 
     if (!defaultSupplier) {
-      throw new BadRequestException(
-        'No default supplier found for this product',
-      );
+      throw new BadRequestException('No default supplier found');
     }
 
     const warehouses = await this.warehousesService.findAll();
@@ -92,8 +90,9 @@ export class PurchaseOrdersService {
       warehouse_id: dto.warehouse_id,
       quantity_ordered: dto.quantity_ordered,
       expected_to_arrive_at: getUnixTime(
-        addDays(new Date(), defaultSupplier.lead_time_in_days),
+        addDays(new Date(), defaultSupplier.lead_time_days),
       ),
+      status: 'pending',
     });
 
     return this.repo.save(purchaseOrder);
@@ -109,37 +108,37 @@ export class PurchaseOrdersService {
       order_direction = 'desc',
     } = query;
 
-    const qb = this.repo.createQueryBuilder('products').where('1=1');
+    const qb = this.repo.createQueryBuilder('product_orders').where('1=1');
 
     if (query.supplier_id) {
-      qb.andWhere('products.supplier_id = :supplier_id', {
+      qb.andWhere('product_orders.supplier_id = :supplier_id', {
         supplier_id: query.supplier_id,
       });
     }
     if (query.warehouse_id) {
-      qb.andWhere('products.warehouse_id = :warehouse_id', {
+      qb.andWhere('product_orders.warehouse_id = :warehouse_id', {
         warehouse_id: query.warehouse_id,
       });
     }
     if (query.product_id) {
-      qb.andWhere('products.product_id = :product_id', {
+      qb.andWhere('product_orders.product_id = :product_id', {
         product_id: query.product_id,
       });
     }
 
     if (query.status) {
-      qb.andWhere('products.status = :status', { status: query.status });
+      qb.andWhere('product_orders.status = :status', { status: query.status });
     }
 
     if (from_time) {
-      qb.andWhere('products.created_at >= :from_time', { from_time });
+      qb.andWhere('product_orders.created_at >= :from_time', { from_time });
     }
     if (to_time) {
-      qb.andWhere('products.created_at <= :to_time', { to_time });
+      qb.andWhere('product_orders.created_at <= :to_time', { to_time });
     }
 
     qb.orderBy(
-      `products.${order_by}`,
+      `product_orders.${order_by}`,
       order_direction.toUpperCase() as 'ASC' | 'DESC',
     );
 

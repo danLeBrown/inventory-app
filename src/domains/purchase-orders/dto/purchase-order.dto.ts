@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '@/common/dto/base.dto';
 
 import { PurchaseOrder } from '../entities/purchase-order.entity';
+import { PURCHASE_ORDER_STATUS, PurchaseOrderStatus } from '../types';
 
 export class PurchaseOrderDto extends BaseDto {
   @ApiProperty({
@@ -37,6 +38,13 @@ export class PurchaseOrderDto extends BaseDto {
   quantity_ordered: number;
 
   @ApiProperty({
+    example: 'pending',
+    description: 'The status of the purchase order',
+    enum: Object.values(PURCHASE_ORDER_STATUS),
+  })
+  status: PurchaseOrderStatus;
+
+  @ApiProperty({
     example: 1628444000,
     description: 'The expected arrival date of the order (Unix timestamp)',
   })
@@ -49,6 +57,7 @@ export class PurchaseOrderDto extends BaseDto {
     this.supplier_id = partial.supplier_id;
     this.warehouse_id = partial.warehouse_id;
     this.quantity_ordered = partial.quantity_ordered;
+    this.status = partial.status;
     this.expected_to_arrive_at = partial.expected_to_arrive_at;
   }
 }

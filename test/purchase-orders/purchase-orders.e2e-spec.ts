@@ -135,9 +135,9 @@ describe('PurchaseOrdersController (e2e)', () => {
       });
     });
 
-    it('POST /v1/purchase-orders', (done) => {
+    it('POST /v1/purchase-orders/products/:id', (done) => {
       request
-        .post(`/v1/purchase-orders/${product.id}`, {})
+        .post(`/v1/purchase-orders/products/${product.id}`, {})
         .expect(201)
         .end((err, res) => {
           if (err) {
@@ -177,7 +177,7 @@ describe('PurchaseOrdersController (e2e)', () => {
       });
     });
 
-    it('POST /v1/purchase-orders/products/:id (error when no quantity to order)', (done) => {
+    it('POST /v1/purchase-orders/products/:id (error when not enough capacity)', (done) => {
       request
         .post(`/v1/purchase-orders/products/${product.id}`, {})
         .expect(400)
@@ -190,7 +190,7 @@ describe('PurchaseOrdersController (e2e)', () => {
           expect(res.body).toHaveProperty('statusCode', 400);
           expect(res.body).toHaveProperty(
             'message',
-            'No more capacity available in the warehouses to receive the purchase order',
+            'No warehouse available to receive the purchase order',
           );
           expect(res.body).toHaveProperty('error', 'Bad Request');
 
@@ -213,19 +213,21 @@ describe('PurchaseOrdersController (e2e)', () => {
           expect(res.body.data).toBeInstanceOf(Array);
           expect(res.body.data.length).toBeGreaterThanOrEqual(1);
           expect(res.body.data[0]).toHaveProperty('id');
-          expect(res.body.data[0]).toHaveProperty('name');
-          expect(res.body.data[0]).toHaveProperty('description');
-          expect(res.body.data[0]).toHaveProperty('sku');
-          expect(res.body.data[0]).toHaveProperty('quantity_in_stock');
-          expect(res.body.data[0]).toHaveProperty('reorder_threshold');
+          expect(res.body.data[0]).toHaveProperty('product_id');
+          expect(res.body.data[0]).toHaveProperty('supplier_id');
+          expect(res.body.data[0]).toHaveProperty('warehouse_id');
+          expect(res.body.data[0]).toHaveProperty('quantity_ordered');
+          expect(res.body.data[0]).toHaveProperty('status');
+          expect(res.body.data[0]).toHaveProperty('created_at');
+          expect(res.body.data[0]).toHaveProperty('updated_at');
 
           return done();
         });
     });
 
-    it('purchase-orders?search_query= (GET)', (done) => {
+    it('purchase-orders?status= (GET)', (done) => {
       request
-        .get('/v1/purchase-orders?search_query=Test')
+        .get('/v1/purchase-orders?status=pending')
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -234,7 +236,6 @@ describe('PurchaseOrdersController (e2e)', () => {
 
           expect(res.body.data).toBeInstanceOf(Array);
           expect(res.body.data.length).toBeGreaterThanOrEqual(1);
-          expect(res.body.data[0].name).toContain('Test');
 
           return done();
         });

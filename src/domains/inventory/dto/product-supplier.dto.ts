@@ -21,7 +21,7 @@ export class ProductSupplierDto extends BaseDto {
     example: 7,
     description: 'Lead time in days for the supplier to deliver the product',
   })
-  lead_time_in_days: number;
+  lead_time_days: number;
 
   @ApiProperty({
     example: false,
@@ -33,7 +33,7 @@ export class ProductSupplierDto extends BaseDto {
     super(partial);
     this.product_id = partial.product_id;
     this.supplier_id = partial.supplier_id;
-    this.lead_time_in_days = partial.lead_time_in_days;
+    this.lead_time_days = partial.lead_time_days;
     this.is_default = partial.is_default;
   }
 }

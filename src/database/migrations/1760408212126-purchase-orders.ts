@@ -34,7 +34,7 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
       isNullable: true,
     }),
     new TableColumn({
-      name: 'quantity',
+      name: 'quantity_ordered',
       type: 'int',
     }),
     new TableColumn({
