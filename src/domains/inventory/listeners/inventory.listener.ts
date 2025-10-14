@@ -28,7 +28,7 @@ export class InventoryListener {
       payload.product_id,
     );
 
-    if (product.reorder_threshold <= sum) {
+    if (sum <= product.reorder_threshold) {
       await this.productService.createPurchaseOrder(product.id);
     }
 
