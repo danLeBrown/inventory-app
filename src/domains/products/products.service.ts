@@ -80,7 +80,7 @@ export class ProductsService {
     return qb.getManyAndCount();
   }
 
-  async findById(id: string): Promise<Product> {
+  async findByIdOrFail(id: string): Promise<Product> {
     const product = await this.repo.findOne({
       where: { id },
     });
@@ -93,7 +93,7 @@ export class ProductsService {
   }
 
   async update(id: string, dto: UpdateProductDto): Promise<Product> {
-    const product = await this.findById(id);
+    const product = await this.findByIdOrFail(id);
 
     if (dto.sku && dto.sku !== product.sku) {
       const exists = await this.repo.exists({
@@ -107,11 +107,11 @@ export class ProductsService {
 
     await this.repo.update(id, dto);
 
-    return this.findById(id);
+    return this.findByIdOrFail(id);
   }
 
   async delete(id: string): Promise<void> {
-    const product = await this.findById(id);
+    const product = await this.findByIdOrFail(id);
 
     await this.repo.remove(product);
   }

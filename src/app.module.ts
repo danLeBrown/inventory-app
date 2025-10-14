@@ -14,6 +14,7 @@ import { AppDataSource } from './data-source';
 import { AuditLogsModule } from './domains/audit-logs/audit-logs.module';
 import { AuditLogInterceptor } from './domains/audit-logs/interceptors/audit-log.interceptor';
 import { AuthModule } from './domains/authentication/auth.module';
+import { InventoryModule } from './domains/inventory/inventory.module';
 import { ProductsModule } from './domains/products/products.module';
 import { PurchaseOrdersModule } from './domains/purchase-orders/purchase-orders.module';
 import { SharedModule } from './domains/shared/shared.module';
@@ -68,6 +69,7 @@ import { RedisModule } from './redis/redis.module';
     UsersModule,
     SharedModule,
     ProductsModule,
+    InventoryModule,
     PurchaseOrdersModule,
     SuppliersModule,
     WarehousesModule,

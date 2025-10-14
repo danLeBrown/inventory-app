@@ -29,18 +29,11 @@ export class ProductDto extends BaseDto {
   })
   reorder_threshold: number;
 
-  @ApiProperty({
-    example: 100,
-    description: 'The current quantity in stock',
-  })
-  quantity_in_stock: number;
-
   constructor(partial: Product) {
     super(partial);
     this.sku = partial.sku;
     this.name = partial.name;
     this.description = partial.description;
     this.reorder_threshold = partial.reorder_threshold;
-    this.quantity_in_stock = partial.quantity_in_stock;
   }
 }
