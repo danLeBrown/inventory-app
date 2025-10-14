@@ -49,6 +49,7 @@ describe('WarehousesController (e2e)', () => {
           expect(res.body.data).toHaveProperty('name', req.name);
           expect(res.body.data).toHaveProperty('location', req.location);
           expect(res.body.data).toHaveProperty('capacity', req.capacity);
+          expect(res.body.data).toHaveProperty('quantity_in_stock', 0);
 
           return done();
         });
@@ -80,6 +81,7 @@ describe('WarehousesController (e2e)', () => {
           expect(res.body.data[0]).toHaveProperty('name');
           expect(res.body.data[0]).toHaveProperty('location');
           expect(res.body.data[0]).toHaveProperty('capacity');
+          expect(res.body.data[0]).toHaveProperty('quantity_in_stock');
 
           return done();
         });
@@ -147,6 +149,7 @@ describe('WarehousesController (e2e)', () => {
             '123 Specific St, Specific City, TX',
           );
           expect(res.body.data).toHaveProperty('capacity', 500);
+          expect(res.body.data).toHaveProperty('quantity_in_stock', 0);
           return done();
         });
     });
