@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -12,6 +13,7 @@ export class InventoryService {
   constructor(
     @InjectRepository(WarehouseStock)
     private readonly repo: Repository<WarehouseStock>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async createOrUpdateStockLevel(data: UpdateWarehouseStockDto) {
@@ -46,6 +48,8 @@ export class InventoryService {
         return repo.save(newStock);
       }),
     );
+
+    await this.eventEmitter.emitAsync('inventory.stock.updated', data);
 
     return exe;
   }

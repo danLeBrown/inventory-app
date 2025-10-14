@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not } from 'typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 
+import { ensureTransaction } from '@/helpers/database';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { SearchAndPaginateProductDto } from './dto/query-and-paginate-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -112,5 +114,26 @@ export class ProductsService {
     const product = await this.findByIdOrFail(id);
 
     await this.repo.remove(product);
+  }
+
+  async updateQuantityInStock(id: string, quantity: number) {
+    await ensureTransaction(() =>
+      this.repo.manager.transaction(async (manager) => {
+        const repo = manager.getRepository(Product);
+        const product = await repo.findOne({
+          where: {
+            id,
+          },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!product) {
+          throw new NotFoundException('Product not found');
+        }
+        await repo.update(product.id, {
+          quantity_in_stock: Math.max(0, quantity),
+        });
+      }),
+    );
   }
 }

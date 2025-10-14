@@ -20,8 +20,8 @@ export class Product extends BaseEntity<ProductDto> {
   @Column({ type: 'int' })
   reorder_threshold: number;
 
-  // @Column({ type: 'int' })
-  // quantity_in_stock: number;
+  @Column({ type: 'int' })
+  quantity_in_stock: number;
 
   // @OneToMany(() => WarehouseStock, (ps) => ps.product)
   // warehouse_stocks: WarehouseStock[];

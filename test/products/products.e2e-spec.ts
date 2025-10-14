@@ -121,7 +121,7 @@ describe('ProductsController (e2e)', () => {
           expect(res.body.data[0]).toHaveProperty('name');
           expect(res.body.data[0]).toHaveProperty('description');
           expect(res.body.data[0]).toHaveProperty('sku');
-          // expect(res.body.data[0]).toHaveProperty('quantity_in_stock');
+          expect(res.body.data[0]).toHaveProperty('quantity_in_stock');
           expect(res.body.data[0]).toHaveProperty('reorder_threshold');
 
           return done();
@@ -192,7 +192,7 @@ describe('ProductsController (e2e)', () => {
             'Product to fetch by ID',
           );
           expect(res.body.data).toHaveProperty('sku', 'SPECIFICSKU123');
-          // expect(res.body.data).toHaveProperty('quantity_in_stock', 20);
+          expect(res.body.data).toHaveProperty('quantity_in_stock', 0);
           expect(res.body.data).toHaveProperty('reorder_threshold', 2);
 
           return done();

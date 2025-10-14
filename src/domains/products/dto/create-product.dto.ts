@@ -33,12 +33,4 @@ export class CreateProductDto {
   @IsNumber()
   @Min(1)
   reorder_threshold: number;
-
-  // @ApiProperty({
-  //   example: 100,
-  //   description: 'The current quantity in stock',
-  // })
-  // @IsNumber()
-  // @Min(0)
-  // quantity_in_stock: number;
 }

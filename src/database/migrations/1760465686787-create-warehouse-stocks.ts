@@ -3,11 +3,12 @@ import {
   QueryRunner,
   Table,
   TableColumn,
+  TableForeignKey,
   TableIndex,
 } from 'typeorm';
 
-export class CreateProducts1760408106657 implements MigrationInterface {
-  private tableName = 'products';
+export class CreateWarehouseStocks1760465686787 implements MigrationInterface {
+  private tableName = 'warehouse_stocks';
 
   private columns = [
     new TableColumn({
@@ -18,27 +19,16 @@ export class CreateProducts1760408106657 implements MigrationInterface {
       default: 'uuid_generate_v4()',
     }),
     new TableColumn({
-      name: 'sku',
-      type: 'varchar',
-      length: '255',
+      name: 'warehouse_id',
+      type: 'uuid',
     }),
     new TableColumn({
-      name: 'name',
-      type: 'varchar',
-      length: '255',
+      name: 'product_id',
+      type: 'uuid',
     }),
     new TableColumn({
-      name: 'description',
-      type: 'text',
-    }),
-    new TableColumn({
-      name: 'reorder_threshold',
+      name: 'quantity',
       type: 'int',
-    }),
-    new TableColumn({
-      name: 'quantity_in_stock',
-      type: 'int',
-      default: 0,
     }),
     new TableColumn({
       name: 'created_at',
@@ -55,21 +45,35 @@ export class CreateProducts1760408106657 implements MigrationInterface {
 
   private indices = [
     new TableIndex({
-      name: 'idx_products_sku',
-      columnNames: ['sku'],
-      isUnique: true,
+      name: 'idx_warehouse_stocks_product_id',
+      columnNames: ['product_id'],
     }),
     new TableIndex({
-      name: 'idx_products_name',
-      columnNames: ['name'],
+      name: 'idx_warehouse_stocks_warehouse_id',
+      columnNames: ['warehouse_id'],
     }),
     new TableIndex({
-      name: 'idx_products_created_at',
+      name: 'idx_product_suppliers_created_at',
       columnNames: ['created_at'],
     }),
     new TableIndex({
-      name: 'idx_products_updated_at',
+      name: 'idx_product_suppliers_updated_at',
       columnNames: ['updated_at'],
+    }),
+  ];
+
+  private foreignKeys = [
+    new TableForeignKey({
+      columnNames: ['product_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'products',
+      onDelete: 'CASCADE',
+    }),
+    new TableForeignKey({
+      columnNames: ['warehouse_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'warehouses',
+      onDelete: 'CASCADE',
     }),
   ];
 
@@ -79,6 +83,7 @@ export class CreateProducts1760408106657 implements MigrationInterface {
         name: this.tableName,
         columns: this.columns,
         indices: this.indices,
+        foreignKeys: this.foreignKeys,
       }),
     );
   }
