@@ -63,7 +63,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.DEV_USER }}
-          password: ${{ secrets.DEV_SSH_KEY }}
+          key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.PORT }}
           source: 'deployment/*'
           target: '/tmp/app-deployment'
@@ -74,7 +74,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.DEV_USER }}
-          password: ${{ secrets.DEV_SSH_KEY }}
+          key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
             export NVM_DIR=~/.nvm
