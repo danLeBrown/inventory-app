@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
@@ -13,7 +12,6 @@ import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PaginatedDto } from '@/common/dto/paginated.dto';
 
 import { AuditLog } from '../audit-logs/decorators/audit-log.decorator';
-import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { PurchaseOrderDto } from './dto/purchase-order.dto';
 import { PurchaseOrderLogDto } from './dto/purchase-order-log.dto';
 import { QueryAndPaginatePurchaseOrderDto } from './dto/query-and-paginate-purchase-order.dto';
@@ -23,7 +21,7 @@ import { PurchaseOrdersService } from './purchase-orders.service';
 export class PurchaseOrdersController {
   constructor(private readonly purchaseOrdersService: PurchaseOrdersService) {}
 
-  @Post('')
+  @Post('products/:product_id')
   @ApiCreatedResponse({
     description: 'The purchase order has been created.',
     type: PurchaseOrderDto,
@@ -31,8 +29,8 @@ export class PurchaseOrdersController {
   @AuditLog({
     action: 'Create purchase order',
   })
-  async create(@Body() dto: CreatePurchaseOrderDto) {
-    const data = await this.purchaseOrdersService.create(dto);
+  async create(@Param('product_id', ParseUUIDPipe) product_id: string) {
+    const data = await this.purchaseOrdersService.create(product_id);
 
     return {
       data: data.toDto(),

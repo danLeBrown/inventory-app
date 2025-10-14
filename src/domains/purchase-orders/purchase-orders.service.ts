@@ -4,12 +4,14 @@ import { addDays, getUnixTime } from 'date-fns';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { ProductSuppliersService } from '../inventory/product-suppliers.service';
+import { ProductsService } from '../products/products.service';
 import { WarehousesService } from '../warehouses/warehouses.service';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { QueryAndPaginatePurchaseOrderDto } from './dto/query-and-paginate-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PurchaseOrder } from './entities/purchase-order.entity';
 import { PurchaseOrderLog } from './entities/purchase-order-log.entity';
+import { decideQuantityAndWareHouse } from './helpers/decide-quantity';
 
 @Injectable()
 export class PurchaseOrdersService {
@@ -19,16 +21,51 @@ export class PurchaseOrdersService {
     @InjectRepository(PurchaseOrderLog)
     private readonly logRepo: Repository<PurchaseOrderLog>,
     private warehousesService: WarehousesService,
+    private productsService: ProductsService,
     private productSuppliersService: ProductSuppliersService,
   ) {}
 
-  async create(dto: CreatePurchaseOrderDto) {
-    await this.warehousesService.findOneOrFail(dto.warehouse_id);
+  async create(product_id: string) {
+    const product = await this.productsService.findByIdOrFail(product_id);
 
-    const productSupplier = await this.productSuppliersService.findOneByOrFail({
-      product_id: dto.product_id,
-      supplier_id: dto.supplier_id,
+    const defaultSupplier =
+      await this.productSuppliersService.findDefaultSupplierForProduct(
+        product_id,
+      );
+
+    if (!defaultSupplier) {
+      throw new BadRequestException(
+        'No default supplier found for this product',
+      );
+    }
+
+    const warehouses = await this.warehousesService.findAll();
+
+    const pending_purchase_orders = await this.repo.find({
+      where: {
+        product_id,
+        status: 'pending',
+      },
     });
+
+    const { quantity, warehouse } = decideQuantityAndWareHouse({
+      product_reorder_threshold: product.reorder_threshold,
+      warehouses,
+      pending_purchase_orders,
+    });
+
+    if (quantity === 0 || !warehouse) {
+      throw new BadRequestException(
+        'No warehouse available to receive the purchase order',
+      );
+    }
+
+    const dto = {
+      product_id,
+      supplier_id: defaultSupplier.supplier_id,
+      warehouse_id: warehouse.id,
+      quantity_ordered: quantity,
+    } satisfies CreatePurchaseOrderDto;
 
     // TODO: check if pending purchase order already exists
     const pending = await this.repo.findOne({
@@ -49,7 +86,7 @@ export class PurchaseOrdersService {
       warehouse_id: dto.warehouse_id,
       quantity_ordered: dto.quantity_ordered,
       expected_to_arrive_at: getUnixTime(
-        addDays(new Date(), productSupplier.lead_time_in_days),
+        addDays(new Date(), defaultSupplier.lead_time_in_days),
       ),
     });
 

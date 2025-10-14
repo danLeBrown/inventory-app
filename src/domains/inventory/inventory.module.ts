@@ -8,6 +8,7 @@ import { WarehouseStock } from './entities/warehouse-stock.entity';
 import { InventoryController } from './inventory.controller';
 import { InventoryService } from './inventory.service';
 import { InventoryListener } from './listeners/inventory.listener';
+import { ProductSuppliersService } from './product-suppliers.service';
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { InventoryListener } from './listeners/inventory.listener';
     WarehousesModule,
     ProductsModule,
   ],
-  providers: [InventoryService, InventoryListener],
+  providers: [InventoryService, InventoryListener, ProductSuppliersService],
   controllers: [InventoryController],
-  exports: [InventoryService],
+  exports: [InventoryService, ProductSuppliersService],
 })
 export class InventoryModule {}

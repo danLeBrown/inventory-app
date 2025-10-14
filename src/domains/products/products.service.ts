@@ -152,12 +152,8 @@ export class ProductsService {
   }
 
   async createPurchaseOrder(product_id: string) {
-    //   const quantity_to_order = product.reorder_threshold * 2 - current_stock;
     await this.purchaseOrdersQueue.add('create-purchase-order', {
       product_id,
     });
-    // const product = await this.findByIdOrFail(product_id);
-    // if(product.reorder_threshold > current_stock) {
-    // }
   }
 }
