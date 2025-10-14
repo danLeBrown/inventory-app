@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
@@ -21,7 +21,6 @@ import { SharedModule } from './domains/shared/shared.module';
 import { SuppliersModule } from './domains/suppliers/suppliers.module';
 import { UsersModule } from './domains/users/users.module';
 import { WarehousesModule } from './domains/warehouses/warehouses.module';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { HeaderCsrfModule } from './middlewares/header-csrf.middleware';
 import { RedisModule } from './redis/redis.module';
 @Module({
@@ -77,10 +76,10 @@ import { RedisModule } from './redis/redis.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
     {
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,
