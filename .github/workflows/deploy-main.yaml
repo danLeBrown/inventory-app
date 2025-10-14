@@ -52,7 +52,6 @@ jobs:
           cp -r dist/ deployment/
           cp package.json deployment/
           cp pnpm-lock.yaml deployment/
-          cp ormconfig.js deployment/
           cp seeding-source.js deployment/
 
           # Optional - include other necessary files
@@ -81,7 +80,7 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh   
 
-            cd /var/www/staging-inventory-api.danlebrown.com/public_html
+            cd /var/www/staging-inventory.danlebrown.com/public_html
             # Backup current dist (optional)
             mv dist dist_backup_$(date +%Y%m%d%H%M%S) 2>/dev/null || true
 
