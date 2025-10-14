@@ -10,10 +10,12 @@ import {
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuditLog } from '../audit-logs/decorators/audit-log.decorator';
+import { UnauthenticatedRoute } from '../authentication/decorators/unauthenticated.decorator';
 import { QueryStockLevelDto } from '../inventory/dto/query-stock-level.dto';
 import { UpdateProductStockLevelDto } from '../inventory/dto/update-product-stock-level.dto';
 import { InventoryService } from './inventory.service';
 
+@UnauthenticatedRoute()
 @ApiTags('Inventory')
 @Controller({ path: 'inventory', version: '1' })
 export class InventoryController {

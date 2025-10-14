@@ -1,15 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { addDays, getUnixTime } from 'date-fns';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { ProductSuppliersService } from '../inventory/product-suppliers.service';
+import { ProductsService } from '../products/products.service';
 import { WarehousesService } from '../warehouses/warehouses.service';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { QueryAndPaginatePurchaseOrderDto } from './dto/query-and-paginate-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PurchaseOrder } from './entities/purchase-order.entity';
 import { PurchaseOrderLog } from './entities/purchase-order-log.entity';
+import { decideQuantityAndWareHouse } from './helpers/decide-quantity';
 
 @Injectable()
 export class PurchaseOrdersService {
@@ -19,26 +21,78 @@ export class PurchaseOrdersService {
     @InjectRepository(PurchaseOrderLog)
     private readonly logRepo: Repository<PurchaseOrderLog>,
     private warehousesService: WarehousesService,
+    private productsService: ProductsService,
     private productSuppliersService: ProductSuppliersService,
   ) {}
 
-  async create(dto: CreatePurchaseOrderDto) {
-    await this.warehousesService.findOneOrFail(dto.warehouse_id);
+  async create(product_id: string) {
+    const product = await this.productsService.findByIdOrFail(product_id);
 
-    const productSupplier = await this.productSuppliersService.findOneByOrFail({
-      product_id: dto.product_id,
-      supplier_id: dto.supplier_id,
+    const defaultSupplier =
+      await this.productSuppliersService.findDefaultSupplierForProduct(
+        product_id,
+      );
+
+    if (!defaultSupplier) {
+      throw new BadRequestException('No default supplier found');
+    }
+
+    const warehouses = await this.warehousesService.findAll();
+
+    const pending_purchase_orders = await this.repo.find({
+      where: {
+        product_id,
+        status: 'pending',
+      },
     });
 
-    // TODO: check if purchase order already exists
+    const { quantity, warehouse } = decideQuantityAndWareHouse({
+      product_reorder_threshold: product.reorder_threshold,
+      warehouses,
+      pending_purchase_orders,
+    });
+
+    if (!warehouse) {
+      throw new BadRequestException(
+        'No warehouse available to receive the purchase order',
+      );
+    }
+
+    if (quantity < 1) {
+      throw new BadRequestException(
+        'No more capacity available in the warehouses to receive the purchase order',
+      );
+    }
+
+    const dto = {
+      product_id,
+      supplier_id: defaultSupplier.supplier_id,
+      warehouse_id: warehouse.id,
+      quantity_ordered: quantity,
+    } satisfies CreatePurchaseOrderDto;
+
+    // TODO: check if pending purchase order already exists
+    const pending = await this.repo.findOne({
+      where: {
+        product_id: dto.product_id,
+        warehouse_id: dto.warehouse_id,
+        status: 'pending',
+      },
+    });
+
+    if (pending) {
+      await this.repo.delete(pending.id);
+    }
+
     const purchaseOrder = this.repo.create({
       product_id: dto.product_id,
       supplier_id: dto.supplier_id,
       warehouse_id: dto.warehouse_id,
       quantity_ordered: dto.quantity_ordered,
       expected_to_arrive_at: getUnixTime(
-        addDays(new Date(), productSupplier.lead_time_in_days),
+        addDays(new Date(), defaultSupplier.lead_time_days),
       ),
+      status: 'pending',
     });
 
     return this.repo.save(purchaseOrder);
@@ -54,37 +108,37 @@ export class PurchaseOrdersService {
       order_direction = 'desc',
     } = query;
 
-    const qb = this.repo.createQueryBuilder('products').where('1=1');
+    const qb = this.repo.createQueryBuilder('product_orders').where('1=1');
 
     if (query.supplier_id) {
-      qb.andWhere('products.supplier_id = :supplier_id', {
+      qb.andWhere('product_orders.supplier_id = :supplier_id', {
         supplier_id: query.supplier_id,
       });
     }
     if (query.warehouse_id) {
-      qb.andWhere('products.warehouse_id = :warehouse_id', {
+      qb.andWhere('product_orders.warehouse_id = :warehouse_id', {
         warehouse_id: query.warehouse_id,
       });
     }
     if (query.product_id) {
-      qb.andWhere('products.product_id = :product_id', {
+      qb.andWhere('product_orders.product_id = :product_id', {
         product_id: query.product_id,
       });
     }
 
     if (query.status) {
-      qb.andWhere('products.status = :status', { status: query.status });
+      qb.andWhere('product_orders.status = :status', { status: query.status });
     }
 
     if (from_time) {
-      qb.andWhere('products.created_at >= :from_time', { from_time });
+      qb.andWhere('product_orders.created_at >= :from_time', { from_time });
     }
     if (to_time) {
-      qb.andWhere('products.created_at <= :to_time', { to_time });
+      qb.andWhere('product_orders.created_at <= :to_time', { to_time });
     }
 
     qb.orderBy(
-      `products.${order_by}`,
+      `product_orders.${order_by}`,
       order_direction.toUpperCase() as 'ASC' | 'DESC',
     );
 
@@ -167,5 +221,9 @@ export class PurchaseOrdersService {
       where: { purchase_order_id },
       order: { created_at: 'DESC' },
     });
+  }
+
+  async findBy(query?: FindOptionsWhere<PurchaseOrder>) {
+    return this.repo.find({ where: query });
   }
 }

@@ -34,13 +34,8 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
       isNullable: true,
     }),
     new TableColumn({
-      name: 'quantity',
+      name: 'quantity_ordered',
       type: 'int',
-    }),
-    new TableColumn({
-      name: 'ordered_at',
-      type: 'bigint',
-      isNullable: true,
     }),
     new TableColumn({
       name: 'expected_to_arrive_at',
@@ -67,6 +62,12 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
 
   private indices = [
     new TableIndex({
+      name: 'unq_idx_purchase_orders_product_id_supplier_id_pending',
+      columnNames: ['product_id', 'supplier_id', 'status'],
+      isUnique: true,
+      where: "status = 'pending'",
+    }),
+    new TableIndex({
       name: 'idx_purchase_orders_product_id',
       columnNames: ['product_id'],
     }),
@@ -81,10 +82,6 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
     new TableIndex({
       name: 'idx_purchase_orders_status',
       columnNames: ['status'],
-    }),
-    new TableIndex({
-      name: 'idx_purchase_orders_ordered_at',
-      columnNames: ['ordered_at'],
     }),
     new TableIndex({
       name: 'idx_purchase_orders_expected_to_arrive_at',

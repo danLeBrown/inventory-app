@@ -120,4 +120,8 @@ export class WarehousesService {
       }),
     );
   }
+
+  async findAll() {
+    return this.repo.find();
+  }
 }

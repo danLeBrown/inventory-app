@@ -24,6 +24,14 @@ export class InventoryListener {
       product_id: payload.product_id,
     });
 
+    const product = await this.productService.findByIdOrFail(
+      payload.product_id,
+    );
+
+    if (sum <= product.reorder_threshold) {
+      await this.productService.createPurchaseOrder(product.id);
+    }
+
     await this.productService.updateQuantityInStock(payload.product_id, sum);
   }
 
