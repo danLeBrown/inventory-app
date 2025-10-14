@@ -69,7 +69,7 @@ DB_USERNAME=your_db_user
 DB_PASSWORD=your_db_password
 DB_DATABASE=your_db_name
 DB_PORT=5432
-APP_PORT=3000
+PORT=3000
 ```
 
 #### Start Services with Docker Compose

@@ -9,7 +9,7 @@ services:
       - pgsql
       - redis
     ports:
-      - '${APP_PORT:-3000}:3000'
+      - '${PORT:-3000}:3000'
     environment:
       - NODE_ENV=development
       - DB_HOST=pgsql
