@@ -32,6 +32,10 @@ function registerGlobalMiddleware(app: INestApplication) {
         process.env.ADMIN_URL,
         // Add your ngrok domain pattern if it's consistent
         /\.ngrok-free\.app$/,
+        // for lovable
+        /lovable\.app$/,
+        // for bolt
+        /local-credentialless\.webcontainer-api\.io/,
         // add localhost patterns for development
         /^http:\/\/localhost(:\d+)?$/,
         // add 127.0.0.1 patterns for development
