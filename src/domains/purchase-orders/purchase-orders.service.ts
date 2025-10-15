@@ -6,7 +6,10 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { ProductSuppliersService } from '../inventory/product-suppliers.service';
 import { ProductsService } from '../products/products.service';
 import { WarehousesService } from '../warehouses/warehouses.service';
-import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import {
+  CreatePurchaseOrderDto,
+  CreatePurchaseOrderFromProductDto,
+} from './dto/create-purchase-order.dto';
 import { QueryAndPaginatePurchaseOrderDto } from './dto/query-and-paginate-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PurchaseOrder } from './entities/purchase-order.entity';
@@ -25,7 +28,9 @@ export class PurchaseOrdersService {
     private productSuppliersService: ProductSuppliersService,
   ) {}
 
-  async create(product_id: string) {
+  async create(dto: CreatePurchaseOrderFromProductDto) {
+    const { product_id, quantity_ordered } = dto;
+
     const product = await this.productsService.findByIdOrFail(product_id);
 
     const defaultSupplier =
@@ -50,6 +55,7 @@ export class PurchaseOrdersService {
       product_reorder_threshold: product.reorder_threshold,
       warehouses,
       pending_purchase_orders,
+      quantity_ordered,
     });
 
     if (!warehouse) {
@@ -64,7 +70,7 @@ export class PurchaseOrdersService {
       );
     }
 
-    const dto = {
+    const body = {
       product_id,
       supplier_id: defaultSupplier.supplier_id,
       warehouse_id: warehouse.id,
@@ -74,8 +80,8 @@ export class PurchaseOrdersService {
     // TODO: check if pending purchase order already exists
     const pending = await this.repo.findOne({
       where: {
-        product_id: dto.product_id,
-        warehouse_id: dto.warehouse_id,
+        product_id: body.product_id,
+        warehouse_id: body.warehouse_id,
         status: 'pending',
       },
     });
@@ -85,10 +91,7 @@ export class PurchaseOrdersService {
     }
 
     const purchaseOrder = this.repo.create({
-      product_id: dto.product_id,
-      supplier_id: dto.supplier_id,
-      warehouse_id: dto.warehouse_id,
-      quantity_ordered: dto.quantity_ordered,
+      ...body,
       expected_to_arrive_at: getUnixTime(
         addDays(new Date(), defaultSupplier.lead_time_days),
       ),

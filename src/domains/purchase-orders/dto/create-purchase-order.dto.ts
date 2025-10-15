@@ -41,3 +41,19 @@ export class CreatePurchaseOrderDto {
   })
   status?: PurchaseOrderStatus;
 }
+
+export class CreatePurchaseOrderFromProductDto {
+  @ApiProperty({
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
+    description: 'The unique identifier for the product being ordered',
+  })
+  @IsUUID()
+  product_id: string;
+
+  @ApiProperty({
+    example: 100,
+    description: 'The quantity of the product ordered',
+  })
+  @IsPositive()
+  quantity_ordered: number;
+}

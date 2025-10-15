@@ -6,6 +6,7 @@ export function decideQuantityAndWareHouse(data: {
   product_reorder_threshold: number;
   warehouses: Warehouse[];
   pending_purchase_orders: PurchaseOrder[];
+  quantity_ordered?: number;
 }): { quantity: number; warehouse: Warehouse | null } {
   const sortedWarehouses = data.warehouses.sort(
     (a, b) => b.capacity - a.capacity,
@@ -27,7 +28,9 @@ export function decideQuantityAndWareHouse(data: {
 
     if (current_stock + pending_quantity < data.product_reorder_threshold) {
       const quantity_needed =
+        data.quantity_ordered ??
         data.product_reorder_threshold * 2 - (current_stock + pending_quantity);
+
       return {
         quantity: Math.min(quantity_needed, available_space),
         warehouse,

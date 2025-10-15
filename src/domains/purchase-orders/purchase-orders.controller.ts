@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -13,6 +14,7 @@ import { PaginatedDto } from '@/common/dto/paginated.dto';
 
 import { AuditLog } from '../audit-logs/decorators/audit-log.decorator';
 import { UnauthenticatedRoute } from '../authentication/decorators/unauthenticated.decorator';
+import { CreatePurchaseOrderFromProductDto } from './dto/create-purchase-order.dto';
 import { PurchaseOrderDto } from './dto/purchase-order.dto';
 import { PurchaseOrderLogDto } from './dto/purchase-order-log.dto';
 import { QueryAndPaginatePurchaseOrderDto } from './dto/query-and-paginate-purchase-order.dto';
@@ -23,7 +25,7 @@ import { PurchaseOrdersService } from './purchase-orders.service';
 export class PurchaseOrdersController {
   constructor(private readonly purchaseOrdersService: PurchaseOrdersService) {}
 
-  @Post('products/:product_id')
+  @Post('products')
   @ApiCreatedResponse({
     description: 'The purchase order has been created.',
     type: PurchaseOrderDto,
@@ -31,8 +33,8 @@ export class PurchaseOrdersController {
   @AuditLog({
     action: 'Create purchase order',
   })
-  async create(@Param('product_id', ParseUUIDPipe) product_id: string) {
-    const data = await this.purchaseOrdersService.create(product_id);
+  async create(@Body() dto: CreatePurchaseOrderFromProductDto) {
+    const data = await this.purchaseOrdersService.create(dto);
 
     return {
       data: data.toDto(),
