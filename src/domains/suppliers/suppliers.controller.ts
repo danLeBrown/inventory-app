@@ -9,7 +9,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 import { PaginatedDto } from '@/common/dto/paginated.dto';
 
@@ -44,10 +50,22 @@ export class SuppliersController {
   }
 
   @Get('')
+  @ApiExtraModels(PaginatedDto)
   @ApiOkResponse({
     description: 'List of suppliers',
-    isArray: true,
-    type: [SupplierDto],
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(PaginatedDto) },
+        {
+          properties: {
+            data: {
+              type: 'array',
+              items: { $ref: getSchemaPath(SupplierDto) },
+            },
+          },
+        },
+      ],
+    },
   })
   @AuditLog({
     action: 'Query suppliers',

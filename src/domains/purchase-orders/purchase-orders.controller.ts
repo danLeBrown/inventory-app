@@ -7,7 +7,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiExtraModels,
+  ApiOkResponse,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 import { PaginatedDto } from '@/common/dto/paginated.dto';
 
@@ -40,10 +45,22 @@ export class PurchaseOrdersController {
   }
 
   @Get('')
+  @ApiExtraModels(PaginatedDto)
   @ApiOkResponse({
     description: 'List of purchase orders',
-    isArray: true,
-    type: [PurchaseOrderDto],
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(PaginatedDto) },
+        {
+          properties: {
+            data: {
+              type: 'array',
+              items: { $ref: getSchemaPath(PurchaseOrderDto) },
+            },
+          },
+        },
+      ],
+    },
   })
   @AuditLog({
     action: 'Query purchase orders',
