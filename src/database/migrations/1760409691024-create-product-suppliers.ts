@@ -50,12 +50,9 @@ export class CreateProductSuppliers1760409691024 implements MigrationInterface {
 
   private indices = [
     new TableIndex({
-      name: 'idx_product_suppliers_product_id',
-      columnNames: ['product_id'],
-    }),
-    new TableIndex({
-      name: 'idx_product_suppliers_supplier_id',
-      columnNames: ['supplier_id'],
+      name: 'unq_idx_product_suppliers_product_id_supplier_id',
+      columnNames: ['product_id', 'supplier_id'],
+      isUnique: true,
     }),
     new TableIndex({
       name: 'idx_product_suppliers_is_default',

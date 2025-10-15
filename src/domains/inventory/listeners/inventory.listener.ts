@@ -4,8 +4,10 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { ProductsService } from '@/domains/products/products.service';
 import { WarehousesService } from '@/domains/warehouses/warehouses.service';
 
+import { CreateProductSupplierDto } from '../dto/create-product-supplier.dto';
 import { UpdateWarehouseStockDto } from '../dto/update-warehouse-stock.dto';
 import { InventoryService } from '../inventory.service';
+import { ProductSuppliersService } from '../product-suppliers.service';
 
 @Injectable()
 export class InventoryListener {
@@ -13,6 +15,7 @@ export class InventoryListener {
     private readonly inventoryService: InventoryService,
     private readonly productService: ProductsService,
     private readonly warehouseService: WarehousesService,
+    private readonly productSuppliersService: ProductSuppliersService,
   ) {}
 
   @OnEvent('inventory.stock.updated', {
@@ -48,5 +51,15 @@ export class InventoryListener {
       payload.warehouse_id,
       sum,
     );
+  }
+
+  @OnEvent('product.supplier.created', {
+    async: true,
+    promisify: true,
+  })
+  async handleProductSupplierCreatedEvent(payload: CreateProductSupplierDto) {
+    if (payload.is_default) {
+      await this.productSuppliersService.updateAsDefault(payload);
+    }
   }
 }
