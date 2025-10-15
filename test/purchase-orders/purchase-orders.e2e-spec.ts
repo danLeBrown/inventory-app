@@ -25,6 +25,7 @@ describe('PurchaseOrdersController (e2e)', () => {
   let supplier: Supplier;
   let productSuppliersService: ProductSuppliersService;
   let suppliersService: SuppliersService;
+  let warehouseService: WarehousesService;
 
   beforeAll(async () => {
     [app, containers] = await setupApplication();
@@ -34,6 +35,7 @@ describe('PurchaseOrdersController (e2e)', () => {
     productsService = app.get(ProductsService);
     productSuppliersService = app.get(ProductSuppliersService);
     suppliersService = app.get(SuppliersService);
+    warehouseService = app.get(WarehousesService);
 
     product = await productsService.create({
       name: 'Initial Product',
@@ -134,7 +136,6 @@ describe('PurchaseOrdersController (e2e)', () => {
 
   describe('it should create a purchase order', () => {
     beforeAll(async () => {
-      const warehouseService = app.get(WarehousesService);
       await warehouseService.create({
         name: 'Main Warehouse',
         location: '123 Warehouse St, City, Country',
@@ -270,7 +271,105 @@ describe('PurchaseOrdersController (e2e)', () => {
     });
   });
 
-  // describe('it should be able to mark a purchase order as completed', ()=>{
+  describe('it should be able to mark a purchase order as completed', () => {
+    let newProduct: Product;
+    let purchaseOrderId: string;
+    beforeAll(async () => {
+      newProduct = await productsService.create({
+        name: faker.commerce.productName(),
+        description: 'Product for completing purchase order test',
+        sku: faker.string.alphanumeric(10).toUpperCase(),
+        reorder_threshold: 500,
+      });
 
-  // })
+      await productSuppliersService.create({
+        product_id: newProduct.id,
+        supplier_id: supplier.id,
+        is_default: true,
+        lead_time_days: 5,
+      });
+
+      await warehouseService.create({
+        name: faker.company.name() + ' Warehouse',
+        location: '123 Warehouse St, City, Country',
+        capacity: 1000,
+      });
+
+      const response = await request
+        .post(`/v1/purchase-orders`, {
+          product_id: newProduct.id,
+        })
+        .expect(201);
+      purchaseOrderId = response.body.data.id;
+    });
+
+    it('PATCH /v1/purchase-orders/:id/complete', (done) => {
+      request
+        .patch(`/v1/purchase-orders/${purchaseOrderId}/complete`, {})
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+
+          expect(res.body.message).toBeDefined();
+          expect(res.body.message).toEqual(
+            'Purchase order updated as completed successfully',
+          );
+
+          return done();
+        });
+    });
+  });
+
+  describe('it should be able to mark a purchase order as cancelled', () => {
+    let purchaseOrderId: string;
+    let newProduct: Product;
+    beforeAll(async () => {
+      newProduct = await productsService.create({
+        name: faker.commerce.productName(),
+        description: 'Product for cancelling purchase order test',
+        sku: faker.string.alphanumeric(10).toUpperCase(),
+        reorder_threshold: 500,
+      });
+
+      await productSuppliersService.create({
+        product_id: newProduct.id,
+        supplier_id: supplier.id,
+        is_default: true,
+        lead_time_days: 5,
+      });
+
+      await warehouseService.create({
+        name: faker.company.name() + ' Warehouse',
+        location: '123 Warehouse St, City, Country',
+        capacity: 1000,
+      });
+
+      const response = await request
+        .post(`/v1/purchase-orders`, {
+          product_id: newProduct.id,
+        })
+        .expect(201);
+      purchaseOrderId = response.body.data.id;
+    });
+
+    it('PATCH /v1/purchase-orders/:id/cancel', (done) => {
+      request
+        .patch(`/v1/purchase-orders/${purchaseOrderId}/cancel`, {})
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+
+          expect(res.body.message).toBeDefined();
+          expect(res.body.message).toEqual(
+            'Purchase order cancelled successfully',
+          );
+
+          return done();
+        });
+    });
+  });
 });

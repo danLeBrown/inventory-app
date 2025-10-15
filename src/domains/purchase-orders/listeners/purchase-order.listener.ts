@@ -11,7 +11,7 @@ export class PurchaseOrderListener {
     private readonly inventoryService: InventoryService, // Assume InventoryService is imported
   ) {}
 
-  @OnEvent('purchase-order.received', { async: true, promisify: true })
+  @OnEvent('purchase-order.completed', { async: true, promisify: true })
   async handlePurchaseOrderReceivedEvent(payload: PurchaseOrder) {
     await this.inventoryService.createOrUpdateStockLevel({
       product_id: payload.product_id,

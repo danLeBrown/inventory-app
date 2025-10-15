@@ -186,12 +186,12 @@ export class PurchaseOrdersService {
     return this.findByIdOrFail(id);
   }
 
-  async updateAsReceived(id: string) {
+  async updateAsCompleted(id: string) {
     const purchaseOrder = await this.findByIdOrFail(id);
 
     if (purchaseOrder.status !== 'pending') {
       throw new BadRequestException(
-        'Only pending purchase orders can be marked as received',
+        'Only pending purchase orders can be marked as completed',
       );
     }
 
@@ -201,13 +201,15 @@ export class PurchaseOrdersService {
     await this.logRepo.save(
       this.logRepo.create({
         purchase_order_id: id,
-        group: 'status',
         tag: 'completed_at',
         value: String(getUnixTime(new Date())),
       }),
     );
 
-    await this.eventEmitter.emitAsync('purchase-order.received', purchaseOrder);
+    await this.eventEmitter.emitAsync(
+      'purchase-order.completed',
+      purchaseOrder,
+    );
   }
 
   async updateAsCancelled(id: string) {
@@ -225,7 +227,6 @@ export class PurchaseOrdersService {
     await this.logRepo.save(
       this.logRepo.create({
         purchase_order_id: id,
-        group: 'status',
         tag: 'cancelled_at',
         value: String(getUnixTime(new Date())),
       }),

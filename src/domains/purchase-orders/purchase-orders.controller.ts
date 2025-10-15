@@ -110,27 +110,27 @@ export class PurchaseOrdersController {
     };
   }
 
-  @Patch(':id/receive')
+  @Patch(':id/complete')
   @ApiOkResponse({
-    description: 'The purchase order has been updated as received.',
+    description: 'The purchase order has been updated as completed.',
     schema: {
       type: 'object',
       properties: {
         message: {
           type: 'string',
-          example: 'Purchase order updated as received successfully',
+          example: 'Purchase order updated as completed successfully',
         },
       },
     },
   })
   @AuditLog({
-    action: 'Update purchase order as received',
+    action: 'Update purchase order as completed',
   })
   async update(@Param('id', ParseUUIDPipe) id: string) {
-    await this.purchaseOrdersService.updateAsReceived(id);
+    await this.purchaseOrdersService.updateAsCompleted(id);
 
     return {
-      message: 'Purchase order updated as received successfully',
+      message: 'Purchase order updated as completed successfully',
     };
   }
 
