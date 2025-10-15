@@ -154,6 +154,11 @@ export class PurchaseOrdersService {
       qb.offset((page - 1) * limit);
     }
 
+    // load relations
+    qb.leftJoinAndSelect('product_orders.product', 'product');
+    qb.leftJoinAndSelect('product_orders.supplier', 'supplier');
+    qb.leftJoinAndSelect('product_orders.warehouse', 'warehouse');
+
     return qb.getManyAndCount();
   }
 
