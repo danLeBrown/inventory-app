@@ -24,6 +24,6 @@ export class PurchaseOrderProcessor extends WorkerHost {
   private async handleCreatePurchaseOrder(
     data: Pick<CreatePurchaseOrderDto, 'product_id'>,
   ) {
-    return this.purchaseOrdersService.create(data.product_id);
+    return this.purchaseOrdersService.create({ product_id: data.product_id });
   }
 }

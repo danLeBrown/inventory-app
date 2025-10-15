@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsPositive, IsUUID } from 'class-validator';
+import { IsOptional, IsPositive, IsUUID } from 'class-validator';
 
 import { PURCHASE_ORDER_STATUS, PurchaseOrderStatus } from '../types';
 
@@ -40,4 +40,22 @@ export class CreatePurchaseOrderDto {
     default: 'pending',
   })
   status?: PurchaseOrderStatus;
+}
+
+export class CreatePurchaseOrderFromProductDto {
+  @ApiProperty({
+    example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
+    description: 'The unique identifier for the product being ordered',
+  })
+  @IsUUID()
+  product_id: string;
+
+  @ApiProperty({
+    example: 100,
+    description: 'The quantity of the product ordered',
+    required: false,
+  })
+  @IsOptional()
+  @IsPositive()
+  quantity_ordered?: number;
 }

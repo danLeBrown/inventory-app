@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsNumber,
@@ -39,3 +39,8 @@ export class CreateProductSupplierDto {
   @IsOptional()
   is_default?: boolean;
 }
+
+export class CreateProductSupplierOmitProductDto extends OmitType(
+  CreateProductSupplierDto,
+  ['product_id'] as const,
+) {}

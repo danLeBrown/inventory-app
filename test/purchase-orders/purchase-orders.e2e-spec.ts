@@ -5,6 +5,7 @@ import { AbstractStartedContainer } from 'testcontainers';
 import { ProductSuppliersService } from '../../src/domains/inventory/product-suppliers.service';
 import { Product } from '../../src/domains/products/entities/product.entity';
 import { ProductsService } from '../../src/domains/products/products.service';
+import { CreatePurchaseOrderFromProductDto } from '../../src/domains/purchase-orders/dto/create-purchase-order.dto';
 import { Supplier } from '../../src/domains/suppliers/entities/supplier.entity';
 import { SuppliersService } from '../../src/domains/suppliers/suppliers.service';
 import { WarehousesService } from '../../src/domains/warehouses/warehouses.service';
@@ -48,9 +49,11 @@ describe('PurchaseOrdersController (e2e)', () => {
   });
 
   describe('it should throw an error when creating a purchase order', () => {
-    it('POST /v1/purchase-orders/products/:id (error when product not found)', (done) => {
+    it('POST /v1/purchase-orders (error when product not found)', (done) => {
       request
-        .post(`/v1/purchase-orders/products/${faker.string.uuid()}`, {})
+        .post(`/v1/purchase-orders`, {
+          product_id: faker.string.uuid(),
+        })
         .expect(404)
         .end((err, res) => {
           if (err) {
@@ -66,9 +69,11 @@ describe('PurchaseOrdersController (e2e)', () => {
         });
     });
 
-    it('POST /v1/purchase-orders/products/:id (error when no default supplier)', (done) => {
+    it('POST /v1/purchase-orders (error when no default supplier)', (done) => {
       request
-        .post(`/v1/purchase-orders/products/${product.id}`, {})
+        .post(`/v1/purchase-orders`, {
+          product_id: product.id,
+        })
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -102,9 +107,11 @@ describe('PurchaseOrdersController (e2e)', () => {
         });
       });
 
-      it('POST /v1/purchase-orders/products/:id (error when no warehouse available)', (done) => {
+      it('POST /v1/purchase-orders (error when no warehouse available)', (done) => {
         request
-          .post(`/v1/purchase-orders/products/${product.id}`, {})
+          .post(`/v1/purchase-orders`, {
+            product_id: product.id,
+          })
           .expect(400)
           .end((err, res) => {
             if (err) {
@@ -135,9 +142,11 @@ describe('PurchaseOrdersController (e2e)', () => {
       });
     });
 
-    it('POST /v1/purchase-orders/products/:id', (done) => {
+    it('POST /v1/purchase-orders', (done) => {
       request
-        .post(`/v1/purchase-orders/products/${product.id}`, {})
+        .post(`/v1/purchase-orders`, {
+          product_id: product.id,
+        })
         .expect(201)
         .end((err, res) => {
           if (err) {
@@ -177,9 +186,12 @@ describe('PurchaseOrdersController (e2e)', () => {
       });
     });
 
-    it('POST /v1/purchase-orders/products/:id (error when not enough capacity)', (done) => {
+    it('POST /v1/purchase-orders (error when not enough capacity)', (done) => {
       request
-        .post(`/v1/purchase-orders/products/${product.id}`, {})
+        .post(`/v1/purchase-orders`, {
+          product_id: newProduct.id,
+          quantity_ordered: 5000,
+        } satisfies CreatePurchaseOrderFromProductDto)
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -257,4 +269,8 @@ describe('PurchaseOrdersController (e2e)', () => {
         });
     });
   });
+
+  // describe('it should be able to mark a purchase order as completed', ()=>{
+
+  // })
 });
