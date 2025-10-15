@@ -68,14 +68,15 @@ export class PurchaseOrderDto extends BaseDto {
   })
   expected_to_arrive_at: number;
 
-  p;
-
   constructor(partial: PurchaseOrder) {
     super(partial);
     this.order_id = partial.id;
     this.product_id = partial.product_id;
+    this.product_name = partial.product_name;
     this.supplier_id = partial.supplier_id;
+    this.supplier_name = partial.supplier_name;
     this.warehouse_id = partial.warehouse_id;
+    this.warehouse_name = partial.warehouse_name;
     this.quantity_ordered = partial.quantity_ordered;
     this.status = partial.status;
     this.expected_to_arrive_at = partial.expected_to_arrive_at;
