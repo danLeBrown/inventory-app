@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,13 +29,22 @@ export class InventoryService {
         });
 
         if (warehouseStock) {
+          if (
+            data.operation === 'subtract' &&
+            warehouseStock.quantity < data.quantity
+          ) {
+            throw new BadRequestException(
+              'Insufficient stock to remove the requested quantity.',
+            );
+          }
+
           const stock =
             data.operation === 'add'
               ? data.quantity + warehouseStock.quantity
               : warehouseStock.quantity - data.quantity;
 
           return repo.update(warehouseStock.id, {
-            quantity: Math.max(0, stock),
+            quantity: stock,
           });
         }
 
