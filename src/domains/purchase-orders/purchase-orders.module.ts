@@ -8,6 +8,7 @@ import { SuppliersModule } from '../suppliers/suppliers.module';
 import { WarehousesModule } from '../warehouses/warehouses.module';
 import { PurchaseOrder } from './entities/purchase-order.entity';
 import { PurchaseOrderLog } from './entities/purchase-order-log.entity';
+import { PurchaseOrderListener } from './listeners/purchase-order.listener';
 import { PurchaseOrderProcessor } from './processors/purchase-order.processor';
 import { PurchaseOrdersController } from './purchase-orders.controller';
 import { PurchaseOrdersService } from './purchase-orders.service';
@@ -28,7 +29,11 @@ import { PurchaseOrdersService } from './purchase-orders.service';
     SuppliersModule,
   ],
   controllers: [PurchaseOrdersController],
-  providers: [PurchaseOrdersService, PurchaseOrderProcessor],
+  providers: [
+    PurchaseOrdersService,
+    PurchaseOrderProcessor,
+    PurchaseOrderListener,
+  ],
   exports: [PurchaseOrdersService],
 })
 export class PurchaseOrdersModule {}

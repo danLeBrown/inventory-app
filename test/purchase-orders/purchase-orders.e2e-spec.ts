@@ -303,6 +303,14 @@ describe('PurchaseOrdersController (e2e)', () => {
       purchaseOrderId = response.body.data.id;
     });
 
+    afterAll(async () => {
+      const updatedProduct = await productsService.findByIdOrFail(
+        newProduct.id,
+      );
+
+      expect(updatedProduct.quantity_in_stock).toBeGreaterThan(0);
+    });
+
     it('PATCH /v1/purchase-orders/:id/complete', (done) => {
       request
         .patch(`/v1/purchase-orders/${purchaseOrderId}/complete`, {})
