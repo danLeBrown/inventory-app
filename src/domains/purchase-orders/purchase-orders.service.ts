@@ -6,6 +6,7 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { ProductSuppliersService } from '../inventory/product-suppliers.service';
 import { ProductsService } from '../products/products.service';
+import { SuppliersService } from '../suppliers/suppliers.service';
 import { WarehousesService } from '../warehouses/warehouses.service';
 import {
   CreatePurchaseOrderDto,
@@ -28,6 +29,7 @@ export class PurchaseOrdersService {
     private productsService: ProductsService,
     private productSuppliersService: ProductSuppliersService,
     private eventEmitter: EventEmitter2,
+    private suppliersService: SuppliersService,
   ) {}
 
   async create(dto: CreatePurchaseOrderFromProductDto) {
@@ -92,12 +94,19 @@ export class PurchaseOrdersService {
       await this.repo.delete(pending.id);
     }
 
+    const supplier = await this.suppliersService.findOneOrFail(
+      defaultSupplier.supplier_id,
+    );
+
     const purchaseOrder = this.repo.create({
       ...body,
       expected_to_arrive_at: getUnixTime(
         addDays(new Date(), defaultSupplier.lead_time_days),
       ),
       status: 'pending',
+      product_name: product.name,
+      supplier_name: supplier.name,
+      warehouse_name: warehouse.name,
     });
 
     return this.repo.save(purchaseOrder);
@@ -153,11 +162,6 @@ export class PurchaseOrdersService {
     if (page && limit) {
       qb.offset((page - 1) * limit);
     }
-
-    // load relations
-    qb.leftJoinAndSelect('product_orders.product', 'product');
-    qb.leftJoinAndSelect('product_orders.supplier', 'supplier');
-    qb.leftJoinAndSelect('product_orders.warehouse', 'warehouse');
 
     return qb.getManyAndCount();
   }

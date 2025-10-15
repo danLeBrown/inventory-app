@@ -19,10 +19,22 @@ export class PurchaseOrderDto extends BaseDto {
   product_id: string;
 
   @ApiProperty({
+    example: 'Sample Product',
+    description: 'The name of the product being ordered',
+  })
+  product_name: string;
+
+  @ApiProperty({
     example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
     description: 'The unique identifier for the supplier',
   })
   supplier_id: string;
+
+  @ApiProperty({
+    example: 'Sample Supplier',
+    description: 'The name of the supplier',
+  })
+  supplier_name: string;
 
   @ApiProperty({
     example: 'f11bf815-4de8-424c-b2be-5b7de04ac615',
@@ -30,6 +42,12 @@ export class PurchaseOrderDto extends BaseDto {
       'The unique identifier for the warehouse where the order will be stored',
   })
   warehouse_id: string;
+
+  @ApiProperty({
+    example: 'Sample Warehouse',
+    description: 'The name of the warehouse where the order will be stored',
+  })
+  warehouse_name: string;
 
   @ApiProperty({
     example: 100,
@@ -49,6 +67,8 @@ export class PurchaseOrderDto extends BaseDto {
     description: 'The expected arrival date of the order (Unix timestamp)',
   })
   expected_to_arrive_at: number;
+
+  p;
 
   constructor(partial: PurchaseOrder) {
     super(partial);

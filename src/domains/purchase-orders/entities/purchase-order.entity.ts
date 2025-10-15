@@ -15,11 +15,20 @@ export class PurchaseOrder extends BaseEntity<PurchaseOrderDto> {
   @Column({ type: 'uuid' })
   product_id: string;
 
+  @Column({ type: 'varchar', length: 255 })
+  product_name: string;
+
   @Column({ type: 'uuid' })
   supplier_id: string;
 
+  @Column({ type: 'varchar', length: 255 })
+  supplier_name: string;
+
   @Column({ type: 'uuid' })
   warehouse_id: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  warehouse_name: string;
 
   @Column({ type: 'varchar', length: 20 })
   status: PurchaseOrderStatus;

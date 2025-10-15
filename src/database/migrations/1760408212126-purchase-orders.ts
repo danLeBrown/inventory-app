@@ -24,14 +24,29 @@ export class PurchaseOrders1760408212126 implements MigrationInterface {
       isNullable: true,
     }),
     new TableColumn({
+      name: 'product_name',
+      type: 'varchar',
+      length: '255',
+    }),
+    new TableColumn({
       name: 'supplier_id',
       type: 'uuid',
       isNullable: true,
     }),
     new TableColumn({
+      name: 'supplier_name',
+      type: 'varchar',
+      length: '255',
+    }),
+    new TableColumn({
       name: 'warehouse_id',
       type: 'uuid',
       isNullable: true,
+    }),
+    new TableColumn({
+      name: 'warehouse_name',
+      type: 'varchar',
+      length: '255',
     }),
     new TableColumn({
       name: 'quantity_ordered',
