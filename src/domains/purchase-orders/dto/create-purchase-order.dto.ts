@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsPositive, IsUUID } from 'class-validator';
+import { IsOptional, IsPositive, IsUUID } from 'class-validator';
 
 import { PURCHASE_ORDER_STATUS, PurchaseOrderStatus } from '../types';
 
@@ -53,7 +53,9 @@ export class CreatePurchaseOrderFromProductDto {
   @ApiProperty({
     example: 100,
     description: 'The quantity of the product ordered',
+    required: false,
   })
+  @IsOptional()
   @IsPositive()
-  quantity_ordered: number;
+  quantity_ordered?: number;
 }
