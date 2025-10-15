@@ -12,6 +12,8 @@ export function decideQuantityAndWareHouse(data: {
     (a, b) => b.capacity - a.capacity,
   );
 
+  const ideal_quantity_needed = data.product_reorder_threshold * 2;
+
   for (const warehouse of sortedWarehouses) {
     const current_stock = warehouse.quantity_in_stock;
     const pending_quantity = data.pending_purchase_orders
@@ -19,6 +21,7 @@ export function decideQuantityAndWareHouse(data: {
         (po) => po.warehouse_id === warehouse.id && po.status === 'pending',
       )
       .reduce((sum, po) => sum + po.quantity_ordered, 0);
+
     const available_space =
       warehouse.capacity - (current_stock + pending_quantity);
 
@@ -26,13 +29,24 @@ export function decideQuantityAndWareHouse(data: {
       continue; // No space available in this warehouse
     }
 
-    if (current_stock + pending_quantity < data.product_reorder_threshold) {
-      const quantity_needed =
-        data.quantity_ordered ??
-        data.product_reorder_threshold * 2 - (current_stock + pending_quantity);
+    const calculated_quantity_based_on_availability =
+      ideal_quantity_needed - (current_stock + pending_quantity);
 
+    if (data.quantity_ordered !== undefined) {
+      if (available_space >= data.quantity_ordered) {
+        return {
+          quantity: data.quantity_ordered,
+          warehouse,
+        };
+      }
+    }
+
+    if (available_space >= calculated_quantity_based_on_availability) {
       return {
-        quantity: Math.min(quantity_needed, available_space),
+        quantity: Math.min(
+          available_space,
+          calculated_quantity_based_on_availability,
+        ),
         warehouse,
       };
     }

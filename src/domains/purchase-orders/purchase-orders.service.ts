@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { addDays, getUnixTime } from 'date-fns';
 import { FindOptionsWhere, Repository } from 'typeorm';
@@ -26,6 +27,7 @@ export class PurchaseOrdersService {
     private warehousesService: WarehousesService,
     private productsService: ProductsService,
     private productSuppliersService: ProductSuppliersService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(dto: CreatePurchaseOrderFromProductDto) {
@@ -195,6 +197,8 @@ export class PurchaseOrdersService {
         value: String(getUnixTime(new Date())),
       }),
     );
+
+    await this.eventEmitter.emitAsync('purchase-order.received', purchaseOrder);
   }
 
   async updateAsCancelled(id: string) {

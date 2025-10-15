@@ -5,6 +5,7 @@ import { AbstractStartedContainer } from 'testcontainers';
 import { ProductSuppliersService } from '../../src/domains/inventory/product-suppliers.service';
 import { Product } from '../../src/domains/products/entities/product.entity';
 import { ProductsService } from '../../src/domains/products/products.service';
+import { CreatePurchaseOrderFromProductDto } from '../../src/domains/purchase-orders/dto/create-purchase-order.dto';
 import { Supplier } from '../../src/domains/suppliers/entities/supplier.entity';
 import { SuppliersService } from '../../src/domains/suppliers/suppliers.service';
 import { WarehousesService } from '../../src/domains/warehouses/warehouses.service';
@@ -190,7 +191,7 @@ describe('PurchaseOrdersController (e2e)', () => {
         .post(`/v1/purchase-orders`, {
           product_id: newProduct.id,
           quantity_ordered: 5000,
-        })
+        } satisfies CreatePurchaseOrderFromProductDto)
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -268,4 +269,8 @@ describe('PurchaseOrdersController (e2e)', () => {
         });
     });
   });
+
+  // describe('it should be able to mark a purchase order as completed', ()=>{
+
+  // })
 });

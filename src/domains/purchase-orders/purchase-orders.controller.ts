@@ -25,7 +25,7 @@ import { PurchaseOrdersService } from './purchase-orders.service';
 export class PurchaseOrdersController {
   constructor(private readonly purchaseOrdersService: PurchaseOrdersService) {}
 
-  @Post('products')
+  @Post('')
   @ApiCreatedResponse({
     description: 'The purchase order has been created.',
     type: PurchaseOrderDto,
