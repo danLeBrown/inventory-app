@@ -5,7 +5,7 @@ framework: nestjs # Options: nestjs, go, laravel (overrides auto-detection)
 database: postgres # Options: postgres, mysql, mongodb
 health_check_path: /health # Health check endpoint path
 app_port: 3000 # Port the app listens on
-
+app_port_env: PORT # Environment variable for the app port
 
 # Optional: Commands run on the host before docker compose (e.g. copy .env)
 # Non-zero exit fails the deployment.
@@ -14,9 +14,8 @@ app_port: 3000 # Port the app listens on
 #   - mkdir -p uploads
 
 # Optional: Extra infra (e.g. Redis for BullMQ). App gets REDIS_URL=redis://redis:6379
-# extra_services:
-#   - redis
-
+extra_services:
+  - redis
 # Optional: Environment variables (passed to application container)
 # env:
 #   - NODE_ENV=preview
