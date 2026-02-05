@@ -4,18 +4,30 @@
 framework: nestjs # Options: nestjs, go, laravel (overrides auto-detection)
 database: postgres # Options: postgres, mysql, mongodb
 health_check_path: /health # Health check endpoint path
+app_port_env: PORT # Environment variable name for the app port
 app_port: 3000 # Port the app listens on
-app_port_env: PORT # Environment variable for the app port
+
+# example: for NestJS, app_entrypoint is dist/main.js
+# example: for Go, app_entrypoint is ./server
+# example: for Rust, app_entrypoint is ./target/release/app or ./app
+# example: for Python, app_entrypoint is app.main:app
+app_entrypoint: dist/main.js # Entrypoint for the app
 
 # Optional: Commands run on the host before docker compose (e.g. copy .env)
-# Non-zero exit fails the deployment.
 # build_commands:
 #   - cp .env.example .env
-#   - mkdir -p uploads
 
 # Optional: Extra infra (e.g. Redis for BullMQ). App gets REDIS_URL=redis://redis:6379
 extra_services:
   - redis
-# Optional: Environment variables (passed to application container)
+# Optional: Environment variables (injected at runtime; keep .env in .dockerignore)
 # env:
 #   - NODE_ENV=preview
+
+# Optional: Env file(s) relative to repo root (e.g. .env). Use with build_commands: [cp .env.example .env]
+# env_file: .env
+
+# Optional: Commands run inside the app container before the main process (migrations, seeding)
+# startup_commands:
+#   - npm run migration:run
+#   - npm run seed
