@@ -1,0 +1,22 @@
+# Preview Deployer Configuration
+# Place this file in your repository root as preview-config.yml
+
+framework: nestjs # Options: nestjs, go, laravel (overrides auto-detection)
+database: postgres # Options: postgres, mysql, mongodb
+health_check_path: /health # Health check endpoint path
+app_port: 3000 # Port the app listens on
+
+
+# Optional: Commands run on the host before docker compose (e.g. copy .env)
+# Non-zero exit fails the deployment.
+# build_commands:
+#   - cp .env.example .env
+#   - mkdir -p uploads
+
+# Optional: Extra infra (e.g. Redis for BullMQ). App gets REDIS_URL=redis://redis:6379
+# extra_services:
+#   - redis
+
+# Optional: Environment variables (passed to application container)
+# env:
+#   - NODE_ENV=preview

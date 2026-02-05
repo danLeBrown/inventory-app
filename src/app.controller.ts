@@ -18,6 +18,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('health')
+  healthCheck() {
+    return { status: 'ok ' };
+  }
+
   @ApiOkResponse({
     description: 'CSRF token generated successfully',
     schema: {
