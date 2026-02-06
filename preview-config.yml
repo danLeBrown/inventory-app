@@ -29,5 +29,5 @@ env_file: .env
 
 # Optional: Commands run inside the app container before the main process (migrations, seeding)
 startup_commands:
-  - npm run migration:run
+  - npm run migration:prod:run
 #   - npm run seed
