@@ -25,9 +25,9 @@ extra_services:
 #   - NODE_ENV=preview
 
 # Optional: Env file(s) relative to repo root (e.g. .env). Use with build_commands: [cp .env.example .env]
-# env_file: .env
+env_file: .env
 
 # Optional: Commands run inside the app container before the main process (migrations, seeding)
-# startup_commands:
-#   - npm run migration:run
+startup_commands:
+  - npm run migration:run
 #   - npm run seed
