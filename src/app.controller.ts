@@ -20,7 +20,7 @@ export class AppController {
 
   @Get('health')
   healthCheck() {
-    return { status: 'ok ' };
+    return { status: 'ok ', up_time: process.uptime() };
   }
 
   @ApiOkResponse({
