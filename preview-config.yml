@@ -14,8 +14,8 @@ app_port: 3000 # Port the app listens on
 app_entrypoint: dist/main.js # Entrypoint for the app
 
 # Optional: Commands run on the host before docker compose (e.g. copy .env)
-# build_commands:
-#   - cp .env.example .env
+build_commands:
+  - cp .env.example .env
 
 # Optional: Extra infra (e.g. Redis for BullMQ). App gets REDIS_URL=redis://redis:6379
 extra_services:
